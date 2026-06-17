@@ -1,0 +1,60 @@
+{
+  "title": "Generative Sustainability of Cultural Heritage in a Time of Climate Change",
+  "description": "A foundational guide for building resilient library infrastructures for a changing climate.",
+  "author": "Jonathan Swift",
+  "publisher": "Council on Library and Information Resources",
+  "copyright": "© 2026 Council on Library and Information Resources",
+  "icon": "leaf",
+  "image": "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=800",
+  "featuredBlurb": "Our inaugural guide provides a comprehensive framework for institutional resilience, environmental stewardship, and the long-term protection of our shared history.",
+  "publicationDate": "March 2026",
+  "availableLanguages": "Available in 1 Language",
+  "license": "Published under CC BY-NC-SA 4.0",
+  "sections": [
+    {
+      "id": "introduction",
+      "title": "Introduction",
+      "section": "01"
+    },
+    {
+      "id": "why-digitize-now",
+      "title": "Why Digitize Now?",
+      "section": "02"
+    },
+    {
+      "id": "getting-started",
+      "title": "Getting Started",
+      "section": "03"
+    },
+    {
+      "id": "initial-assessment",
+      "title": "Initial Assessment",
+      "section": "04"
+    },
+    {
+      "id": "designing-project-activities",
+      "title": "Designing Project Activities",
+      "section": "05"
+    },
+    {
+      "id": "copyright-privacy-and-ethics",
+      "title": "Copyright, Privacy and Ethics",
+      "section": "06"
+    },
+    {
+      "id": "putting-collections-online",
+      "title": "Putting Collections Online",
+      "section": "07"
+    },
+    {
+      "id": "preserving-digital-content",
+      "title": "Preserving Digital Content",
+      "section": "08"
+    },
+    {
+      "id": "promoting-your-work",
+      "title": "Promoting Your Work",
+      "section": "09"
+    }
+  ]
+}

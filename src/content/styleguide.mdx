@@ -1,0 +1,139 @@
+This page documents the typography and MDX components currently available in this site. Use it as a reference when writing new guide content so the presentation stays consistent.
+
+## Basic Text
+
+Paragraphs are set in the guide's serif reading style. Use regular markdown for most body copy, and rely on **bold text** or _italics_ sparingly to create emphasis inside a paragraph.
+
+When you need to link out to another resource, use a standard markdown link such as [CLIR](https://www.clir.org/). Inline code also works for short references like `metadata.json`, `GuidePullQuote`, or `pnpm build`.
+
+### Usage
+
+```mdx
+Paragraphs are set in the guide's serif reading style.
+
+Use **bold text** or _italics_ for emphasis.
+
+Add links with [label](https://example.com).
+
+Use inline code for short references like `GuideCard`.
+```
+
+## Headings
+
+Use `##` for primary section breaks inside a page and `###` for subsections. The page title itself should be provided by the surrounding page shell rather than repeated inside the MDX body.
+
+### Usage
+
+```mdx
+## Primary Section
+
+### Supporting Subsection
+```
+
+## Lists
+
+Bulleted lists work well for short checklists, grouped considerations, and resource links:
+
+- Name the decision or requirement clearly.
+- Keep each point concise.
+- Prefer parallel phrasing when items belong together.
+
+Numbered lists are useful when sequence matters:
+
+1. Define the scope.
+2. Assess available capacity.
+3. Document the workflow.
+
+### Usage
+
+```mdx
+- First item
+- Second item
+
+1. Step one
+2. Step two
+```
+
+## Blockquote
+
+Standard markdown blockquotes are available for cited passages, highlighted observations, or editorial framing.
+
+> A blockquote is useful when the content should read as a distinct voice or aside.
+
+### Usage
+
+```mdx
+> A blockquote is useful when the content should read as a distinct voice or aside.
+```
+
+## GuidePullQuote
+
+Use `GuidePullQuote` for a high-emphasis callout inside a page. This component is best for a single sentence or short paragraph that should interrupt the reading rhythm and draw attention.
+
+<GuidePullQuote>
+  Use the pull quote component for a short statement you want readers to notice
+  immediately.
+</GuidePullQuote>
+
+### Usage
+
+```mdx
+<GuidePullQuote>
+  Use the pull quote component for a short statement you want readers to notice
+  immediately.
+</GuidePullQuote>
+```
+
+## GuideCardGrid and GuideCard
+
+Use `GuideCardGrid` to lay out grouped resources, principles, or tools. Each child should be a `GuideCard` with a concise title and one short block of supporting text.
+
+<GuideCardGrid>
+  <GuideCard title="Checklists">
+    Use cards when you need a compact summary of a reusable tool, worksheet, or
+    activity.
+  </GuideCard>
+  <GuideCard title="Templates">
+    Keep card copy brief so the grid remains easy to scan on both desktop and
+    mobile.
+  </GuideCard>
+</GuideCardGrid>
+
+### Usage
+
+```mdx
+<GuideCardGrid>
+  <GuideCard title="Checklists">
+    Use cards when you need a compact summary of a reusable tool, worksheet, or
+    activity.
+  </GuideCard>
+  <GuideCard title="Templates">
+    Keep card copy brief so the grid remains easy to scan on both desktop and
+    mobile.
+  </GuideCard>
+</GuideCardGrid>
+```
+
+## GuideHeader
+
+`GuideHeader` is rendered by the reading interface for publication pages. Do not place `GuideHeader` inside normal guide body content unless you are intentionally building a custom page shell.
+
+### Reference Only
+
+```mdx
+<GuideHeader
+  eyebrow="Section 04"
+  title="Initial Assessment"
+  metadata={[
+    { label: "March 2026" },
+    { label: "By Alexander Pope", emphasis: true },
+  ]}
+/>
+```
+
+## Writing Guidance
+
+- Default to plain markdown for narrative content.
+- Use `GuidePullQuote` for one memorable idea, not for routine notes.
+- Use `GuideCardGrid` only when multiple sibling items should be compared or scanned together.
+- Keep examples short enough to stay readable in the reader layout.

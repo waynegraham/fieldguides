@@ -1,0 +1,368 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Readex+Pro:wght@300;400;500;600;700&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Readex Pro", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Cormorant Garamond", serif;
+}
+
+:root {
+  --bg-paper: #fdfcf9;
+  --ink-primary: #1a1a1a;
+  --ink-secondary: #4a4a4a;
+  --clir-red: #9d2235;
+  --accent-olive: #5a5a40;
+  --reader-surface: #f6f3ee;
+  --reader-surface-strong: #ffffff;
+  --reader-border: #e7e5e4;
+  --reader-sidebar-bg: rgba(245, 245, 244, 0.88);
+  --reader-sidebar-border: rgba(231, 229, 228, 0.9);
+  --reader-sidebar-label: #a8a29e;
+  --reader-sidebar-item: #57534e;
+  --reader-sidebar-item-hover-bg: rgba(255, 255, 255, 0.9);
+  --reader-sidebar-item-hover-ink: #1c1917;
+  --reader-sidebar-tool: #57534e;
+  --reader-card-bg: #f5f5f4;
+  --reader-card-border: #e7e5e4;
+  --reader-card-title: #1c1917;
+  --reader-card-body: #57534e;
+  --reader-prose: #57534e;
+  --reader-prose-strong: #1c1917;
+  --reader-inline-code-bg: #f5f5f4;
+  --reader-inline-code-ink: #7f1d1d;
+  --reader-code-bg: #1c1917;
+  --reader-code-ink: #f5f5f4;
+}
+
+.dark {
+  --bg-paper: #121210;
+  --ink-primary: #fdfcf9;
+  --ink-secondary: #a1a1a1;
+  --clir-red: #e53e3e;
+  --reader-surface: #18181b;
+  --reader-surface-strong: #09090b;
+  --reader-border: #27272a;
+  --reader-sidebar-bg: rgba(9, 9, 11, 0.96);
+  --reader-sidebar-border: rgba(63, 63, 70, 0.95);
+  --reader-sidebar-label: #78716c;
+  --reader-sidebar-item: #fafaf9;
+  --reader-sidebar-item-hover-bg: rgba(39, 39, 42, 0.98);
+  --reader-sidebar-item-hover-ink: #ffffff;
+  --reader-sidebar-tool: #e7e5e4;
+  --reader-card-bg: #1c1917;
+  --reader-card-border: #3f3f46;
+  --reader-card-title: #fafaf9;
+  --reader-card-body: #d6d3d1;
+  --reader-prose: #d6d3d1;
+  --reader-prose-strong: #fafaf9;
+  --reader-inline-code-bg: #292524;
+  --reader-inline-code-ink: #fecaca;
+  --reader-code-bg: #09090b;
+  --reader-code-ink: #f5f5f4;
+}
+
+body {
+  background-color: var(--bg-paper);
+  color: var(--ink-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+:focus-visible {
+  outline: 3px solid var(--clir-red);
+  outline-offset: 3px;
+}
+
+.serif {
+  font-family: var(--font-serif);
+}
+
+.bg-clir {
+  background-color: var(--clir-red);
+}
+
+.text-clir {
+  color: var(--clir-red);
+}
+
+.border-clir {
+  border-color: var(--clir-red);
+}
+
+.reader-sidebar-item:hover {
+  background-color: var(--reader-sidebar-item-hover-bg);
+  color: var(--reader-sidebar-item-hover-ink) !important;
+}
+
+.guide-markdown {
+  --reader-body-font-size: clamp(1.2rem, 1.1rem + 0.4vw, 1.65rem);
+  --reader-body-line-height: 1.7;
+  --reader-blockquote-font-size: clamp(1.1rem, 1rem + 0.3vw, 1.4rem);
+  --reader-code-line-height: 1.65;
+  color: var(--reader-prose);
+}
+
+.guide-markdown > * + * {
+  margin-top: 1.75rem;
+}
+
+.guide-markdown p,
+.guide-markdown li {
+  font-family: var(--font-serif);
+  font-size: var(--reader-body-font-size);
+  line-height: var(--reader-body-line-height);
+  color: var(--reader-prose);
+}
+
+.guide-markdown > p:first-of-type::first-letter {
+  color: var(--clir-red);
+  float: left;
+  font-size: 4.5rem;
+  font-weight: 700;
+  line-height: 0.88;
+  margin-right: 0.75rem;
+}
+
+.guide-markdown h2 {
+  font-family: var(--font-sans);
+  font-size: 1.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--reader-prose-strong);
+  margin-top: 4rem;
+}
+
+.guide-markdown h3 {
+  font-family: var(--font-sans);
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--reader-prose-strong);
+  margin-top: 2.5rem;
+}
+
+.guide-markdown ul {
+  list-style: disc;
+  padding-left: 2rem;
+  color: var(--reader-prose);
+}
+
+.guide-markdown ol {
+  list-style: decimal;
+  padding-left: 2rem;
+  color: var(--reader-prose);
+}
+
+.guide-markdown li + li {
+  margin-top: 0.75rem;
+}
+
+.guide-markdown a {
+  color: var(--clir-red);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--clir-red) 45%, transparent);
+  text-underline-offset: 0.14em;
+}
+
+.guide-markdown a:hover {
+  text-decoration-color: currentColor;
+}
+
+.guide-markdown strong {
+  color: var(--reader-prose-strong);
+  font-weight: 700;
+}
+
+.guide-markdown em {
+  color: var(--reader-prose);
+}
+
+.guide-markdown blockquote {
+  margin: 2.5rem 0;
+  padding-left: 1.5rem;
+  border-left: 3px solid color-mix(in srgb, var(--clir-red) 55%, var(--reader-surface-strong));
+}
+
+.guide-markdown blockquote p {
+  font-size: var(--reader-blockquote-font-size);
+  color: var(--reader-prose);
+}
+
+.guide-markdown :not(pre) > code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+  color: var(--reader-inline-code-ink);
+  background: var(--reader-inline-code-bg);
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.4rem;
+}
+
+.guide-markdown pre {
+  margin: 1.5rem 0 2rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 1rem;
+  background: var(--reader-code-bg);
+  color: var(--reader-code-ink);
+  overflow-x: auto;
+}
+
+.guide-markdown pre code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.95rem;
+  line-height: var(--reader-code-line-height);
+}
+
+.reader-size-small .guide-markdown {
+  --reader-body-font-size: clamp(1.05rem, 0.98rem + 0.28vw, 1.35rem);
+  --reader-blockquote-font-size: clamp(1rem, 0.96rem + 0.22vw, 1.2rem);
+}
+
+.reader-size-medium .guide-markdown {
+  --reader-body-font-size: clamp(1.2rem, 1.1rem + 0.4vw, 1.65rem);
+  --reader-blockquote-font-size: clamp(1.1rem, 1rem + 0.3vw, 1.4rem);
+}
+
+.reader-size-large .guide-markdown {
+  --reader-body-font-size: clamp(1.35rem, 1.22rem + 0.48vw, 1.85rem);
+  --reader-blockquote-font-size: clamp(1.18rem, 1.08rem + 0.34vw, 1.52rem);
+}
+
+.reader-leading-tight .guide-markdown {
+  --reader-body-line-height: 1.5;
+  --reader-code-line-height: 1.45;
+}
+
+.reader-leading-normal .guide-markdown {
+  --reader-body-line-height: 1.7;
+  --reader-code-line-height: 1.65;
+}
+
+.reader-leading-relaxed .guide-markdown {
+  --reader-body-line-height: 1.9;
+  --reader-code-line-height: 1.8;
+}
+
+/* Custom scrollbar for a refined look */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d1d1d1;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+[dir="rtl"] .serif {
+  font-family:
+    "Readex Pro", sans-serif; /* Serif often doesn't look right for Arabic in this context */
+}
+
+/* Print Styles */
+@media print {
+  @page {
+    margin: 2cm;
+  }
+
+  /* Force light mode for printing */
+  :root {
+    --bg-paper: #ffffff !important;
+    --ink-primary: #000000 !important;
+    --ink-secondary: #333333 !important;
+    --clir-red: #9d2235 !important;
+  }
+
+  body {
+    background-color: white !important;
+    color: black !important;
+    font-size: 12pt;
+    overflow: visible !important;
+  }
+
+  html,
+  body,
+  #root {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Keep the app root in flow, but hide the normal UI */
+  #root * {
+    visibility: hidden;
+  }
+
+  /* Show only the print container */
+  #print-container {
+    visibility: visible !important;
+    display: block !important;
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+  }
+
+  #print-container * {
+    visibility: visible !important;
+  }
+
+  .print-page {
+    page-break-after: always;
+    display: block !important;
+  }
+
+  .print-page:last-child {
+    page-break-after: auto;
+  }
+
+  /* Ensure serif fonts for readability */
+  .serif {
+    font-family: "Cormorant Garamond", serif !important;
+  }
+
+  /* Typography adjustments for print */
+  h1 {
+    font-size: 28pt !important;
+    margin-bottom: 20pt !important;
+  }
+  h2 {
+    font-size: 20pt !important;
+    margin-top: 30pt !important;
+    margin-bottom: 15pt !important;
+  }
+  h3 {
+    font-size: 16pt !important;
+    margin-top: 20pt !important;
+    margin-bottom: 10pt !important;
+  }
+  p {
+    margin-bottom: 12pt !important;
+    line-height: 1.5 !important;
+  }
+
+  .guide-markdown p,
+  .guide-markdown li {
+    font-size: 14pt !important;
+  }
+
+  /* Links should show their URL in print */
+  a[href]:after {
+    content: " (" attr(href) ")";
+    font-size: 90%;
+    color: #666;
+  }
+
+  /* Remove drop caps or complex styling that might break */
+  .first-letter\:text-7xl:first-letter {
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    color: inherit !important;
+    margin: 0 !important;
+    float: none !important;
+  }
+}
