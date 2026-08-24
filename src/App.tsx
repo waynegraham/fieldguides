@@ -11,6 +11,7 @@ import {
 } from "react-router-dom";
 
 import { CitationModal } from "./components/CitationModal";
+import { DocumentMetadata } from "./components/DocumentMetadata";
 import { LandingPage } from "./components/LandingPage";
 import { Navigation } from "./components/Navigation";
 import { ReaderView } from "./components/ReaderView";
@@ -405,19 +406,7 @@ function PublicationReaderRoute() {
     return <Navigate to="/" replace />;
   }
 
-  if (!pageId) {
-    return (
-      <Navigate
-        to={getPublicationPageRoute(
-          slug,
-          selectedPublication.pages[0]?.id || "",
-        )}
-        replace
-      />
-    );
-  }
-
-  if (!pages.some((page) => page.id === pageId)) {
+  if (pageId && !pages.some((page) => page.id === pageId)) {
     return (
       <Navigate
         to={getPublicationPageRoute(
@@ -449,20 +438,26 @@ function PublicationReaderRoute() {
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/styleguide" element={<StyleguidePage />} />
-      <Route element={<FieldGuidesLayout />}>
-        <Route index element={<LandingRoute />} />
-        <Route
-          path={getPublicationRoute(":slug").replace(/^\//, "")}
-          element={<PublicationReaderRoute />}
-        />
-        <Route
-          path={getPublicationPageRoute(":slug", ":pageId").replace(/^\//, "")}
-          element={<PublicationReaderRoute />}
-        />
-      </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <>
+      <DocumentMetadata />
+      <Routes>
+        <Route path="/styleguide" element={<StyleguidePage />} />
+        <Route element={<FieldGuidesLayout />}>
+          <Route index element={<LandingRoute />} />
+          <Route
+            path={getPublicationRoute(":slug").replace(/^\//, "")}
+            element={<PublicationReaderRoute />}
+          />
+          <Route
+            path={getPublicationPageRoute(":slug", ":pageId").replace(
+              /^\//,
+              "",
+            )}
+            element={<PublicationReaderRoute />}
+          />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
   );
 }

@@ -158,6 +158,11 @@ GitHub Actions runs [`pnpm run check`](./package.json) for pull requests into
 from `main`, the workflow builds and deploys the site to GitHub Pages, then
 smoke-tests the site root and a publication deep link.
 
+The production build also generates route-specific HTML metadata, structured
+data, `sitemap.xml`, and `robots.txt`. Update the canonical site URL and
+publisher details in [`metadata.json`](./metadata.json) if the deployment
+domain changes.
+
 ## Notes for Contributors
 
 - Prefer adding new publications under `publications/<slug>/` instead of hard-coding content in components.

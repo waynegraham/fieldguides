@@ -1,5 +1,8 @@
 {
-  "name": "Field Guides | CLIR",
-  "description": "A visually engaging landing page for CLIR's Field Guides publication series, designed for GLAM professionals.",
+  "name": "CLIR Field Guides",
+  "description": "Open-access, peer-reviewed guidance for libraries, archives, museums, and other stewards of cultural heritage.",
+  "url": "https://waynegraham.github.io/fieldguides/",
+  "publisher": "Council on Library and Information Resources",
+  "publisherUrl": "https://www.clir.org/",
   "requestFramePermissions": []
 }
