@@ -142,9 +142,12 @@ pnpm run check
 
 Runs linting, typechecking, tests, content validation, and formatting checks.
 
-## CI
+## CI and deployment
 
-GitHub Actions runs [`pnpm run check`](./package.json) on pushes to `main` and on pull requests.
+GitHub Actions runs [`pnpm run check`](./package.json) for pull requests into
+`main` and pushes to `main`. After checks pass on a push or manual run, the
+workflow builds and deploys the site to GitHub Pages, then smoke-tests the site
+root and a publication deep link.
 
 ## Notes for Contributors
 
