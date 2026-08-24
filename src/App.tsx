@@ -4,6 +4,7 @@ import {
   Outlet,
   Route,
   Routes,
+  useLocation,
   useNavigate,
   useOutletContext,
   useParams,
@@ -69,7 +70,7 @@ function getReaderClasses(
 }
 
 function useFieldGuideRoute() {
-  return parseFieldGuideRoute(window.location.pathname);
+  return parseFieldGuideRoute(useLocation().pathname);
 }
 
 function FieldGuidesLayout() {
