@@ -1,0 +1,51 @@
+{
+  "title": "The CLIR Guide to Field Guides",
+  "description": "A field guide imported from Google Docs: The CLIR Guide to Field Guides",
+  "author": "CLIR",
+  "publisher": "Council on Library and Information Resources",
+  "copyright": "© 2026 Council on Library and Information Resources",
+  "publicationDate": "August 2026",
+  "license": "Published under CC BY-NC-SA 4.0",
+  "sections": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "section": "01"
+    },
+    {
+      "id": "why-field-guides",
+      "title": "Why Field Guides?",
+      "section": "02"
+    },
+    {
+      "id": "audiences-and-boundaries",
+      "title": "Audiences and Boundaries",
+      "section": "03"
+    },
+    {
+      "id": "priorities-and-principles",
+      "title": "Priorities and Principles",
+      "section": "04"
+    },
+    {
+      "id": "common-elements",
+      "title": "Common Elements",
+      "section": "05"
+    },
+    {
+      "id": "composing-a-field-guide",
+      "title": "Composing a Field Guide",
+      "section": "06"
+    },
+    {
+      "id": "submission-and-review",
+      "title": "Submission and Review",
+      "section": "07"
+    },
+    {
+      "id": "resources",
+      "title": "Resources",
+      "section": "08"
+    }
+  ]
+}

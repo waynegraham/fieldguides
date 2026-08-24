@@ -112,6 +112,19 @@ pnpm run validate:content
 
 Checks publication JSON shape, required metadata, duplicate section IDs, and missing section files.
 
+### Import a Google Doc
+
+Preview an import from a shared Google Doc:
+
+```bash
+pnpm import:google-doc -- "https://docs.google.com/document/d/DOCUMENT_ID/edit"
+```
+
+The command uses Google's Markdown export and performs a dry run by default.
+Review the proposed sections and warnings, then add `--write` and publication
+metadata options to create files. Run `pnpm import:google-doc -- --help` for all
+options. Existing publications require the explicit `--force` option.
+
 ### Formatting
 
 ```bash
@@ -139,3 +152,4 @@ GitHub Actions runs [`pnpm run check`](./package.json) on pushes to `main` and o
 - Keep serializable content metadata in `src/data/publications.ts`.
 - Keep UI decoration and design-specific mapping out of the content loader.
 - If you add a new route pattern, update both the route components and the tests in [`src/data/routes.test.ts`](./src/data/routes.test.ts).
+- See [`docs/google-docs-authoring-workflow.md`](./docs/google-docs-authoring-workflow.md) for the proposed Google Docs editorial and import workflow.

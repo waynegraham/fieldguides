@@ -180,10 +180,52 @@ body {
   color: var(--reader-prose);
 }
 
+.guide-markdown table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.guide-markdown th,
+.guide-markdown td {
+  min-width: 10rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--reader-sidebar-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.guide-markdown th {
+  color: var(--reader-prose-strong);
+  background: var(--reader-surface-strong);
+  font-weight: 700;
+}
+
+.guide-markdown td {
+  color: var(--reader-prose);
+}
+
+.guide-markdown td p {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.guide-markdown img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 1rem;
+}
+
 .guide-markdown blockquote {
   margin: 2.5rem 0;
   padding-left: 1.5rem;
-  border-left: 3px solid color-mix(in srgb, var(--clir-red) 55%, var(--reader-surface-strong));
+  border-left: 3px solid
+    color-mix(in srgb, var(--clir-red) 55%, var(--reader-surface-strong));
 }
 
 .guide-markdown blockquote p {

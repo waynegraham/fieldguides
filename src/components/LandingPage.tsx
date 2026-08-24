@@ -1,11 +1,5 @@
 import { motion } from "motion/react";
-import {
-  Archive,
-  ArrowRight,
-  BookOpen,
-  Landmark,
-  Library,
-} from "lucide-react";
+import { Archive, ArrowRight, BookOpen, Landmark, Library } from "lucide-react";
 
 import { NewsletterSignup } from "./NewsletterSignup";
 import type { GuideCard } from "../data/guidePresentation";
@@ -117,7 +111,7 @@ export function LandingPage({ guides, onReadGuide }: LandingPageProps) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {guides.slice(1).map((guide, index) => (
+            {guides.map((guide, index) => (
               <motion.div
                 key={guide.id}
                 initial={{ opacity: 0, y: 20 }}

@@ -147,7 +147,9 @@ export function ReaderView({
                           key={page.id}
                           onClick={() => onSelectPage(page.id)}
                           type="button"
-                          aria-current={currentPageId === page.id ? "page" : undefined}
+                          aria-current={
+                            currentPageId === page.id ? "page" : undefined
+                          }
                           className={`reader-sidebar-item flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-medium transition-all ${
                             currentPageId === page.id
                               ? "bg-clir text-white shadow-lg shadow-clir/20"

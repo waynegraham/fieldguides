@@ -2,13 +2,17 @@ import mdx from "@mdx-js/rollup";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
+import remarkGfm from "remark-gfm";
 import { defineConfig, loadEnv } from "vite";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, ".", "");
   return {
     plugins: [
-      mdx({ providerImportSource: "@mdx-js/react" }),
+      mdx({
+        providerImportSource: "@mdx-js/react",
+        remarkPlugins: [remarkGfm],
+      }),
       react(),
       tailwindcss(),
     ],
