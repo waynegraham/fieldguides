@@ -318,6 +318,28 @@ function FieldGuidesLayout() {
 
       {isReading && (
         <div id="print-container" className="hidden">
+          <section className="print-cover" aria-label="Publication cover">
+            <div className="print-cover__mark" aria-hidden="true">
+              <span>CLIR</span>
+              <span>Field Guides</span>
+            </div>
+
+            <div className="print-cover__title-block">
+              <p className="print-cover__series">A CLIR Publication</p>
+              <h1>{selectedPublication.guide.title}</h1>
+              <p className="print-cover__author">
+                {selectedPublication.guide.author}
+              </p>
+            </div>
+
+            <footer className="print-cover__footer">
+              <p>{selectedPublication.guide.publisher}</p>
+              {selectedPublication.guide.publicationDate ? (
+                <p>{selectedPublication.guide.publicationDate}</p>
+              ) : null}
+            </footer>
+          </section>
+
           {pages.map((page) => (
             <div key={page.id} className="print-page p-12">
               <GuideHeader
