@@ -34,7 +34,7 @@ jobs:
 
   build:
     name: Build Pages artifact
-    if: github.event_name != 'pull_request'
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: check
     runs-on: ubuntu-latest
     permissions:
@@ -64,7 +64,7 @@ jobs:
 
   deploy:
     name: Deploy to GitHub Pages
-    if: github.event_name != 'pull_request'
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     permissions:
