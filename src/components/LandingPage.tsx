@@ -34,7 +34,7 @@ export function LandingPage({ guides, onReadGuide }: LandingPageProps) {
             <span className="text-xs font-bold uppercase tracking-[0.3em] text-clir mb-6 block">
               Council on Library and Information Resources
             </span>
-            <h1 className="serif text-5xl md:text-7xl lg:text-[100px] leading-[0.95] tracking-tight mb-12 max-w-5xl">
+            <h1 className="serif text-4xl md:text-6xl lg:text-[100px] leading-[0.95] tracking-tight mb-12 max-w-5xl">
               Essential Knowledge for{" "}
               <span className="italic text-stone-400">Cultural Stewards.</span>
             </h1>
