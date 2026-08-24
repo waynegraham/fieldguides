@@ -112,6 +112,15 @@ pnpm run validate:content
 
 Checks publication JSON shape, required metadata, duplicate section IDs, and missing section files.
 
+Before release, run the stricter production content gate:
+
+```bash
+pnpm run validate:production
+```
+
+This also rejects editorial placeholders, empty sections, malformed or insecure
+links, missing local assets, unsafe section slugs, and unreferenced MDX files.
+
 ### Import a Google Doc
 
 Preview an import from a shared Google Doc:

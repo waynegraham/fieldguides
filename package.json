@@ -17,6 +17,7 @@
     "test:watch": "vitest",
     "import:google-doc": "node scripts/import-google-doc.mjs",
     "validate:content": "node scripts/validate-content.mjs",
+    "validate:production": "node scripts/validate-content.mjs --production",
     "check": "pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run validate:content && pnpm run format:check"
   },
   "dependencies": {

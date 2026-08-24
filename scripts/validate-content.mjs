@@ -1,10 +1,29 @@
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import YAML from "yaml";
 
 const rootDir = process.cwd();
 const publicationsDir = path.join(rootDir, "publications");
+const isProduction = process.argv.includes("--production");
+const placeholderPatterns = [
+  { label: "TODO marker", pattern: /\bTODO\b/i },
+  { label: "TBD marker", pattern: /\bTBD\b/i },
+  { label: "FIXME marker", pattern: /\bFIXME\b/i },
+  { label: "placeholder text", pattern: /\bplaceholder\b/i },
+  { label: "sample person name", pattern: /\brandom person\b/i },
+  {
+    label: "sample media description",
+    pattern: /\bexample (?:graphic|image|text)\b/i,
+  },
+  {
+    label: "template instruction",
+    pattern: /\[(?:insert|add|describe)\b[^\]]*\]/i,
+  },
+  { label: "lorem ipsum text", pattern: /\blorem ipsum\b/i },
+];
+const markdownLinkPattern = /!?\[[^\]]*\]\(([^)\s]+)(?:\s+["'][^"']*["'])?\)/g;
 const allowedIcons = new Set([
   "archive",
   "book-open",
@@ -65,18 +84,89 @@ function assertOptionalStringField(value, label, filePath) {
   }
 }
 
+export function getProductionContentIssues(source) {
+  return placeholderPatterns
+    .filter(({ pattern }) => pattern.test(source))
+    .map(({ label }) => label);
+}
+
+function validateProductionText(source, filePath) {
+  const issues = getProductionContentIssues(source);
+
+  if (issues.length > 0) {
+    fail(
+      `${path.relative(rootDir, filePath)} is not production-ready: ${issues.join(", ")}`,
+    );
+  }
+}
+
+function validateProductionLinks(source, filePath) {
+  for (const match of source.matchAll(markdownLinkPattern)) {
+    const target = match[1];
+
+    if (
+      target.startsWith("#") ||
+      target.startsWith("mailto:") ||
+      target.startsWith("tel:")
+    ) {
+      continue;
+    }
+
+    if (/^https?:\/\//i.test(target)) {
+      let url;
+
+      try {
+        url = new URL(target);
+      } catch {
+        fail(
+          `${path.relative(rootDir, filePath)} contains malformed URL "${target}"`,
+        );
+      }
+
+      if (url.protocol !== "https:") {
+        fail(
+          `${path.relative(rootDir, filePath)} contains insecure external URL "${target}"`,
+        );
+      }
+      continue;
+    }
+
+    const localTarget = decodeURIComponent(target.split(/[?#]/, 1)[0]);
+    const resolvedTarget = path.resolve(path.dirname(filePath), localTarget);
+
+    if (!resolvedTarget.startsWith(`${path.dirname(filePath)}${path.sep}`)) {
+      fail(
+        `${path.relative(rootDir, filePath)} contains local link outside its publication directory: "${target}"`,
+      );
+    }
+
+    if (!existsSync(resolvedTarget)) {
+      fail(
+        `${path.relative(rootDir, filePath)} references missing local file "${target}"`,
+      );
+    }
+  }
+}
+
 function validateSectionEntry(
   publicationDir,
   entry,
   indexPath,
   seenIds,
   position,
+  production,
 ) {
   const sectionId = typeof entry === "string" ? entry : entry.id;
 
   if (!isNonEmptyString(sectionId)) {
     fail(
       `${path.relative(rootDir, indexPath)} has a section at position ${position + 1} with no valid id`,
+    );
+  }
+
+  if (production && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(sectionId)) {
+    fail(
+      `${path.relative(rootDir, indexPath)} section id "${sectionId}" must be a lowercase URL-safe slug`,
     );
   }
 
@@ -103,6 +193,7 @@ function validateSectionEntry(
   }
 
   const frontmatter = parseFrontmatter(sectionPath);
+  const sectionSource = readFileSync(sectionPath, "utf8");
   const resolvedTitle = typeof entry === "object" ? entry.title : undefined;
   const resolvedSection = typeof entry === "object" ? entry.section : undefined;
 
@@ -132,9 +223,22 @@ function validateSectionEntry(
       `${path.relative(rootDir, sectionPath)} frontmatter "searchableText" must be a non-empty string`,
     );
   }
+
+  if (production) {
+    const body = sectionSource.replace(/^---\n[\s\S]*?\n---\n?/, "").trim();
+
+    if (body.length < 80) {
+      fail(
+        `${path.relative(rootDir, sectionPath)} is too short to publish (${body.length} characters)`,
+      );
+    }
+
+    validateProductionText(sectionSource, sectionPath);
+    validateProductionLinks(sectionSource, sectionPath);
+  }
 }
 
-function validatePublication(publicationDirName) {
+function validatePublication(publicationDirName, production) {
   const publicationDir = path.join(publicationsDir, publicationDirName);
   const indexPath = path.join(publicationDir, "index.json");
   const indexFile = parseJsonFile(indexPath);
@@ -159,6 +263,16 @@ function validatePublication(publicationDirName) {
   );
   assertOptionalStringField(indexFile.color, "color", indexPath);
   assertOptionalStringField(indexFile.accent, "accent", indexPath);
+
+  if (production) {
+    validateProductionText(JSON.stringify(indexFile), indexPath);
+
+    if (Number.isNaN(Date.parse(indexFile.publicationDate))) {
+      fail(
+        `${path.relative(rootDir, indexPath)} field "publicationDate" must be a valid date`,
+      );
+    }
+  }
 
   if (
     indexFile.icon !== undefined &&
@@ -186,11 +300,31 @@ function validatePublication(publicationDirName) {
       );
     }
 
-    validateSectionEntry(publicationDir, entry, indexPath, seenIds, index);
+    validateSectionEntry(
+      publicationDir,
+      entry,
+      indexPath,
+      seenIds,
+      index,
+      production,
+    );
   });
+
+  if (production) {
+    const unreferencedSections = readdirSync(publicationDir)
+      .filter((fileName) => fileName.endsWith(".mdx"))
+      .map((fileName) => path.basename(fileName, ".mdx"))
+      .filter((sectionId) => !seenIds.has(sectionId));
+
+    if (unreferencedSections.length > 0) {
+      fail(
+        `${path.relative(rootDir, indexPath)} does not reference section file(s): ${unreferencedSections.join(", ")}`,
+      );
+    }
+  }
 }
 
-function main() {
+export function validateContent({ production = false } = {}) {
   let publicationDirs;
 
   try {
@@ -206,12 +340,18 @@ function main() {
   }
 
   for (const publicationDir of publicationDirs) {
-    validatePublication(publicationDir);
+    validatePublication(publicationDir, production);
   }
 
   console.log(
-    `Validated ${publicationDirs.length} publication(s) successfully.`,
+    `${production ? "Production-validated" : "Validated"} ${publicationDirs.length} publication(s) successfully.`,
   );
 }
 
-main();
+const isDirectRun = process.argv[1]
+  ? path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+  : false;
+
+if (isDirectRun) {
+  validateContent({ production: isProduction });
+}

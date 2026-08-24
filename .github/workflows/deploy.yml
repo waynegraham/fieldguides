@@ -31,6 +31,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Run repository checks
         run: pnpm check
+      - name: Run production content gate
+        run: pnpm validate:production
 
   build:
     name: Build Pages artifact
