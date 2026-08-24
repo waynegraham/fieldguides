@@ -6,6 +6,12 @@
   "copyright": "© 2026 Council on Library and Information Resources",
   "publicationDate": "August 2026",
   "license": "Published under CC BY-NC-SA 4.0",
+  "language": {
+    "name": "English",
+    "code": "en",
+    "dir": "ltr"
+  },
+  "translations": [],
   "sections": [
     {
       "id": "overview",

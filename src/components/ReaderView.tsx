@@ -9,12 +9,14 @@ import {
   X,
 } from "lucide-react";
 import { useCallback, useId, useState } from "react";
+import { Link } from "react-router-dom";
 
 import type {
   Guide,
   GuideHeaderMetaItem,
   PublicationPage,
 } from "../data/publications";
+import { getPublicationRoute } from "../data/routes";
 import { GuideHeader } from "./mdx/GuideMdxComponents";
 import { guideMdxComponents } from "./mdx/mdxComponentMap";
 import { useModalAccessibility } from "./useModalAccessibility";
@@ -83,6 +85,47 @@ function ContentsList({
   );
 }
 
+function TranslationEditions({ guide }: { guide: Guide }) {
+  if (guide.translations.length === 0) {
+    return null;
+  }
+
+  return (
+    <div
+      className="mt-8 border-t pt-8"
+      style={{ borderColor: "var(--reader-sidebar-border)" }}
+    >
+      <h4
+        className="mb-4 text-[10px] font-bold uppercase tracking-[0.3em]"
+        style={{ color: "var(--reader-sidebar-label)" }}
+      >
+        Translation editions
+      </h4>
+      <nav aria-label="Translation editions" className="space-y-2 text-sm">
+        <span
+          className="block rounded-lg px-3 py-2 font-semibold"
+          aria-current="page"
+          lang={guide.language.code}
+        >
+          {guide.language.name}
+        </span>
+        {guide.translations.map((translation) => (
+          <Link
+            key={`${translation.language.code}-${translation.slug}`}
+            to={getPublicationRoute(translation.slug)}
+            hrefLang={translation.language.code}
+            lang={translation.language.code}
+            className="reader-sidebar-item block rounded-lg px-3 py-2 transition-colors"
+            style={{ color: "var(--reader-sidebar-item)" }}
+          >
+            {translation.language.name}
+          </Link>
+        ))}
+      </nav>
+    </div>
+  );
+}
+
 export function ReaderView({
   isOpen,
   isSidebarOpen,
@@ -119,6 +162,7 @@ export function ReaderView({
   const pageMetadata: GuideHeaderMetaItem[] = [
     ...(guide.publicationDate ? [{ label: guide.publicationDate }] : []),
     { label: `By ${guide.author}`, emphasis: true },
+    { icon: "globe", label: `${guide.language.name} edition` },
   ];
 
   return (
@@ -245,6 +289,7 @@ export function ReaderView({
                       setIsMobileContentsOpen(false);
                     }}
                   />
+                  <TranslationEditions guide={guide} />
                 </motion.aside>
                 <button
                   onClick={closeMobileContents}
@@ -282,6 +327,7 @@ export function ReaderView({
                       pages={pages}
                       onSelectPage={onSelectPage}
                     />
+                    <TranslationEditions guide={guide} />
                   </div>
 
                   <div
@@ -328,6 +374,8 @@ export function ReaderView({
             <div className="flex-1">
               <article
                 className={`max-w-3xl mx-auto px-6 py-24 ${readerClasses}`}
+                lang={guide.language.code}
+                dir={guide.language.dir}
               >
                 <GuideHeader
                   eyebrow={`Section ${currentPage.section}`}

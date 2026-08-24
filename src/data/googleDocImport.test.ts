@@ -56,6 +56,12 @@ Do the work.
     expect(result.sections[0].body).not.toContain("Next section");
     expect(result.sections[0].body).toContain("![](./assets/image-");
     expect(result.images).toHaveLength(1);
+    expect(result.manifest.language).toEqual({
+      name: "English",
+      code: "en",
+      dir: "ltr",
+    });
+    expect(result.manifest.translations).toEqual([]);
     expect(result.warnings).toContainEqual(
       expect.stringContaining("no alt text"),
     );

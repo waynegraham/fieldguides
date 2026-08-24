@@ -248,6 +248,12 @@ export function convertGoogleMarkdown(source, options = {}) {
         timeZone: "UTC",
       }).format(new Date()),
     license: options.license || "Published under CC BY-NC-SA 4.0",
+    language: {
+      name: "English",
+      code: "en",
+      dir: "ltr",
+    },
+    translations: [],
     sections: sections.map(({ id, title: sectionTitle, section }) => ({
       id,
       title: sectionTitle,

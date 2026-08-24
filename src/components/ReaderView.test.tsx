@@ -2,6 +2,7 @@
 
 import { act } from "react";
 import { createRoot } from "react-dom/client";
+import { MemoryRouter } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { Guide, PublicationPage } from "../data/publications";
@@ -17,6 +18,8 @@ const guide: Guide = {
   copyright: "© CLIR",
   description: "A test guide.",
   featuredBlurb: "A test guide.",
+  language: { name: "English", code: "en", dir: "ltr" },
+  translations: [],
 };
 
 const pages: PublicationPage[] = [
@@ -98,6 +101,52 @@ describe("ReaderView mobile contents", () => {
 
     expect(contentsButton?.getAttribute("aria-expanded")).toBe("false");
     expect(onClose).not.toHaveBeenCalled();
+
+    await act(async () => root.unmount());
+  });
+
+  it("shows only translation editions defined by the publication", async () => {
+    const container = document.createElement("div");
+    containers.push(container);
+    document.body.append(container);
+    const root = createRoot(container);
+    const translatedGuide: Guide = {
+      ...guide,
+      translations: [
+        {
+          language: { name: "Français", code: "fr", dir: "ltr" },
+          slug: "guide-francais",
+        },
+      ],
+    };
+
+    await act(async () => {
+      root.render(
+        <MemoryRouter>
+          <ReaderView
+            isOpen
+            isSidebarOpen
+            guide={translatedGuide}
+            currentPage={pages[0]}
+            currentPageId={pages[0].id}
+            pages={pages}
+            readerClasses=""
+            onClose={vi.fn()}
+            onToggleSidebar={vi.fn()}
+            onOpenCitation={vi.fn()}
+            onOpenSettings={vi.fn()}
+            onSelectPage={vi.fn()}
+          />
+        </MemoryRouter>,
+      );
+    });
+
+    const translationLink =
+      container.querySelector<HTMLAnchorElement>('a[hreflang="fr"]');
+    expect(translationLink?.textContent).toContain("Français");
+    expect(translationLink?.getAttribute("href")).toBe(
+      "/publications/guide-francais",
+    );
 
     await act(async () => root.unmount());
   });

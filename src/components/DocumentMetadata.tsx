@@ -71,6 +71,7 @@ function getPageMetadata(pathname: string) {
     },
     datePublished: publication.guide.publicationDate,
     license: publication.guide.license,
+    inLanguage: publication.guide.language.code,
   };
 
   return {
@@ -84,6 +85,12 @@ function getPageMetadata(pathname: string) {
     robots: "index, follow, max-image-preview:large",
     type: "article",
     image: publication.guide.image,
+    alternates: page
+      ? []
+      : publication.guide.translations.map((translation) => ({
+          language: translation.language.code,
+          url: new URL(`publications/${translation.slug}/`, site.url).href,
+        })),
     structuredData: {
       "@context": "https://schema.org",
       ...(page
@@ -134,7 +141,11 @@ export function DocumentMetadata() {
     setMeta("property", "og:url", metadata.canonicalUrl);
     setMeta("name", "twitter:title", metadata.title);
     setMeta("name", "twitter:description", metadata.description);
-    setMeta("name", "twitter:card", metadata.image ? "summary_large_image" : "summary");
+    setMeta(
+      "name",
+      "twitter:card",
+      metadata.image ? "summary_large_image" : "summary",
+    );
 
     let canonical = document.head.querySelector<HTMLLinkElement>(
       'link[rel="canonical"]',
@@ -145,6 +156,18 @@ export function DocumentMetadata() {
       document.head.append(canonical);
     }
     canonical.href = metadata.canonicalUrl;
+
+    document.head
+      .querySelectorAll('link[data-field-guides-translation="true"]')
+      .forEach((element) => element.remove());
+    metadata.alternates?.forEach((alternate) => {
+      const link = document.createElement("link");
+      link.rel = "alternate";
+      link.hreflang = alternate.language;
+      link.href = alternate.url;
+      link.dataset.fieldGuidesTranslation = "true";
+      document.head.append(link);
+    });
 
     if (metadata.image) {
       const imageUrl = new URL(metadata.image, site.url).href;

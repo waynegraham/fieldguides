@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Navigate,
   Outlet,
@@ -23,7 +23,7 @@ import { guideMdxComponents } from "./components/mdx/mdxComponentMap";
 import {
   FEATURED_PUBLICATION,
   GUIDES,
-  LANGUAGES,
+  INTERFACE_LANGUAGE,
   PUBLICATIONS,
 } from "./data/publications";
 import { decorateGuide } from "./data/guidePresentation";
@@ -82,8 +82,6 @@ function FieldGuidesLayout() {
     FEATURED_PUBLICATION;
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLangOpen, setIsLangOpen] = useState(false);
-  const [selectedLang, setSelectedLang] = useState(LANGUAGES[0]);
   const [scrolled, setScrolled] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -97,7 +95,6 @@ function FieldGuidesLayout() {
   const [readerLineHeight, setReaderLineHeight] =
     useState<ReaderLineHeight>("normal");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const langDropdownRef = useRef<HTMLDivElement>(null);
 
   const pages = selectedPublication?.pages || [];
   const currentPage = pages.find((page) => page.id === pageId) || pages[0];
@@ -217,26 +214,6 @@ function FieldGuidesLayout() {
     };
   }, [isReading]);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        langDropdownRef.current &&
-        !langDropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsLangOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    document.documentElement.dir = selectedLang.dir;
-    document.documentElement.lang = selectedLang.code;
-  }, [selectedLang]);
-
   if (!selectedPublication || !currentPage) {
     return <Navigate to="/" replace />;
   }
@@ -268,17 +245,9 @@ function FieldGuidesLayout() {
       <Navigation
         scrolled={scrolled}
         isMenuOpen={isMenuOpen}
-        isLangOpen={isLangOpen}
-        selectedLang={selectedLang}
-        languages={LANGUAGES}
-        langDropdownRef={langDropdownRef}
+        interfaceLanguage={INTERFACE_LANGUAGE}
         onToggleMenu={() => setIsMenuOpen((open) => !open)}
         onOpenSearch={() => setIsSearchOpen(true)}
-        onToggleLanguageMenu={() => setIsLangOpen((open) => !open)}
-        onSelectLanguage={(language) => {
-          setSelectedLang(language);
-          setIsLangOpen(false);
-        }}
         onCloseMenu={() => setIsMenuOpen(false)}
       />
 
@@ -343,7 +312,12 @@ function FieldGuidesLayout() {
           </section>
 
           {pages.map((page) => (
-            <div key={page.id} className="print-page p-12">
+            <div
+              key={page.id}
+              className="print-page p-12"
+              lang={selectedPublication.guide.language.code}
+              dir={selectedPublication.guide.language.dir}
+            >
               <GuideHeader
                 eyebrow={`Section ${page.section}`}
                 title={page.title}

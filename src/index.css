@@ -330,6 +330,7 @@ body {
 /* Print Styles */
 @media print {
   @page {
+    size: A4 portrait;
     margin: 2cm;
   }
 
@@ -380,7 +381,8 @@ body {
     position: relative;
     box-sizing: border-box;
     display: flex !important;
-    min-height: 100vh;
+    width: 210mm;
+    min-height: 297mm;
     break-after: page;
     page-break-after: always;
     flex-direction: column;

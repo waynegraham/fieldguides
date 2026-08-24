@@ -61,6 +61,11 @@ Each publication lives under `publications/<slug>/`.
 
 `index.json` is the manifest for a guide. It defines the publication-level metadata and the ordered section list. Each section entry must map to an `.mdx` file in the same directory.
 
+Each manifest defines its own `language` object. If a translated edition is
+published as another publication directory, relate it through `translations`
+using that edition's language and slug. Interface localization is configured
+separately and must not be inferred from publication translations.
+
 The app separates concerns in the data layer:
 
 - [`src/data/publications.ts`](./src/data/publications.ts) loads and normalizes content metadata and MDX modules.

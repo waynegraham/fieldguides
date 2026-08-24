@@ -1,36 +1,25 @@
 import { AnimatePresence, motion } from "motion/react";
-import { BookOpen, ChevronDown, Globe, Menu, Search, X } from "lucide-react";
-import { type RefObject } from "react";
+import { BookOpen, Globe, Menu, Search, X } from "lucide-react";
 import { Link } from "react-router-dom";
 
-import type { Language } from "../data/publications";
+import type { PublicationLanguage } from "../data/publications";
 import { useModalAccessibility } from "./useModalAccessibility";
 
 type NavigationProps = {
   scrolled: boolean;
   isMenuOpen: boolean;
-  isLangOpen: boolean;
-  selectedLang: Language;
-  languages: Language[];
-  langDropdownRef: RefObject<HTMLDivElement | null>;
+  interfaceLanguage: PublicationLanguage;
   onToggleMenu: () => void;
   onOpenSearch: () => void;
-  onToggleLanguageMenu: () => void;
-  onSelectLanguage: (language: Language) => void;
   onCloseMenu: () => void;
 };
 
 export function Navigation({
   scrolled,
   isMenuOpen,
-  isLangOpen,
-  selectedLang,
-  languages,
-  langDropdownRef,
+  interfaceLanguage,
   onToggleMenu,
   onOpenSearch,
-  onToggleLanguageMenu,
-  onSelectLanguage,
   onCloseMenu,
 }: NavigationProps) {
   const mobileMenuRef = useModalAccessibility(isMenuOpen, onCloseMenu);
@@ -96,56 +85,12 @@ export function Navigation({
 
             <div className="h-4 w-px bg-stone-200" />
 
-            <div className="relative" ref={langDropdownRef}>
-              <button
-                onClick={onToggleLanguageMenu}
-                type="button"
-                aria-expanded={isLangOpen}
-                aria-haspopup="listbox"
-                aria-controls="language-selector"
-                className="flex items-center gap-2 text-sm font-medium text-stone-600 hover:text-clir transition-colors px-3 py-2 rounded-lg hover:bg-stone-50"
-              >
-                <Globe className="w-4 h-4 text-clir" />
-                <span>{selectedLang.name}</span>
-                <ChevronDown
-                  className={`w-3 h-3 transition-transform duration-300 ${
-                    isLangOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-
-              <AnimatePresence>
-                {isLangOpen && (
-                  <motion.div
-                    id="language-selector"
-                    role="listbox"
-                    aria-label="Select language"
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute right-0 mt-2 w-40 bg-white border border-stone-200 rounded-xl shadow-xl overflow-hidden z-50"
-                  >
-                    <div className="py-1">
-                      {languages.map((language) => (
-                        <button
-                          key={language.code}
-                          onClick={() => onSelectLanguage(language)}
-                          type="button"
-                          role="option"
-                          aria-selected={selectedLang.code === language.code}
-                          className={`w-full text-left px-4 py-2 text-sm transition-colors ${
-                            selectedLang.code === language.code
-                              ? "bg-clir text-white"
-                              : "text-stone-600 hover:bg-stone-50 hover:text-clir"
-                          }`}
-                        >
-                          {language.name}
-                        </button>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+            <div
+              className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-stone-600"
+              aria-label={`Interface language: ${interfaceLanguage.name}`}
+            >
+              <Globe className="w-4 h-4 text-clir" />
+              <span>Interface: {interfaceLanguage.name}</span>
             </div>
           </div>
 
@@ -217,26 +162,11 @@ export function Navigation({
               <div className="h-px bg-stone-100" />
               <div className="space-y-4">
                 <p className="text-sm uppercase tracking-widest text-stone-400 font-bold">
-                  Language
+                  Interface language
                 </p>
-                <div className="grid grid-cols-2 gap-2">
-                  {languages.map((language) => (
-                    <button
-                      key={language.code}
-                      onClick={() => {
-                        onSelectLanguage(language);
-                        onCloseMenu();
-                      }}
-                      type="button"
-                      className={`px-4 py-3 rounded-xl text-left text-lg ${
-                        selectedLang.code === language.code
-                          ? "bg-clir text-white"
-                          : "bg-stone-50 text-stone-600"
-                      }`}
-                    >
-                      {language.name}
-                    </button>
-                  ))}
+                <div className="flex items-center gap-3 rounded-xl bg-stone-50 px-4 py-3 text-lg text-stone-600">
+                  <Globe className="h-5 w-5 text-clir" />
+                  {interfaceLanguage.name}
                 </div>
               </div>
             </div>

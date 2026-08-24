@@ -84,6 +84,98 @@ function assertOptionalStringField(value, label, filePath) {
   }
 }
 
+function validateLanguage(language, label, filePath) {
+  if (!language || typeof language !== "object" || Array.isArray(language)) {
+    fail(
+      `${path.relative(rootDir, filePath)} field "${label}" must define a language object`,
+    );
+  }
+
+  assertStringField(language.name, `${label}.name`, filePath);
+  assertStringField(language.code, `${label}.code`, filePath);
+
+  if (!/^[a-z]{2,3}(?:-[a-z0-9]{2,8})*$/i.test(language.code)) {
+    fail(
+      `${path.relative(rootDir, filePath)} field "${label}.code" must be a valid language code`,
+    );
+  }
+
+  if (!new Set(["ltr", "rtl"]).has(language.dir)) {
+    fail(
+      `${path.relative(rootDir, filePath)} field "${label}.dir" must be "ltr" or "rtl"`,
+    );
+  }
+}
+
+function validateTranslations(indexFile, publicationDirName, indexPath) {
+  if (!Array.isArray(indexFile.translations)) {
+    fail(
+      `${path.relative(rootDir, indexPath)} field "translations" must be an array`,
+    );
+  }
+
+  const seenLanguages = new Set();
+  const seenSlugs = new Set();
+  indexFile.translations.forEach((translation, position) => {
+    if (
+      !translation ||
+      typeof translation !== "object" ||
+      Array.isArray(translation)
+    ) {
+      fail(
+        `${path.relative(rootDir, indexPath)} has an invalid translation at position ${position + 1}`,
+      );
+    }
+
+    validateLanguage(
+      translation.language,
+      `translations[${position}].language`,
+      indexPath,
+    );
+    assertStringField(
+      translation.slug,
+      `translations[${position}].slug`,
+      indexPath,
+    );
+
+    if (translation.slug === publicationDirName) {
+      fail(
+        `${path.relative(rootDir, indexPath)} cannot list itself as a translation`,
+      );
+    }
+    if (seenLanguages.has(translation.language.code)) {
+      fail(
+        `${path.relative(rootDir, indexPath)} defines duplicate translation language "${translation.language.code}"`,
+      );
+    }
+    if (seenSlugs.has(translation.slug)) {
+      fail(
+        `${path.relative(rootDir, indexPath)} defines duplicate translation slug "${translation.slug}"`,
+      );
+    }
+    seenLanguages.add(translation.language.code);
+    seenSlugs.add(translation.slug);
+
+    const translatedIndexPath = path.join(
+      publicationsDir,
+      translation.slug,
+      "index.json",
+    );
+    if (!existsSync(translatedIndexPath)) {
+      fail(
+        `${path.relative(rootDir, indexPath)} references missing translation publication "${translation.slug}"`,
+      );
+    }
+
+    const translatedIndex = parseJsonFile(translatedIndexPath);
+    if (translatedIndex.language?.code !== translation.language.code) {
+      fail(
+        `${path.relative(rootDir, indexPath)} translation "${translation.slug}" does not use language "${translation.language.code}"`,
+      );
+    }
+  });
+}
+
 export function getProductionContentIssues(source) {
   return placeholderPatterns
     .filter(({ pattern }) => pattern.test(source))
@@ -256,13 +348,16 @@ function validatePublication(publicationDirName, production) {
     "featuredBlurb",
     indexPath,
   );
-  assertOptionalStringField(
-    indexFile.availableLanguages,
-    "availableLanguages",
-    indexPath,
-  );
   assertOptionalStringField(indexFile.color, "color", indexPath);
   assertOptionalStringField(indexFile.accent, "accent", indexPath);
+  validateLanguage(indexFile.language, "language", indexPath);
+  validateTranslations(indexFile, publicationDirName, indexPath);
+
+  if (indexFile.availableLanguages !== undefined) {
+    fail(
+      `${path.relative(rootDir, indexPath)} uses legacy field "availableLanguages"; define "language" and "translations" separately`,
+    );
+  }
 
   if (production) {
     validateProductionText(JSON.stringify(indexFile), indexPath);

@@ -30,7 +30,8 @@ type PublicationIndexFile = {
   accent?: string;
   featuredBlurb?: string;
   publicationDate?: string;
-  availableLanguages?: string;
+  language: PublicationLanguage;
+  translations?: TranslationEdition[];
   license?: string;
 };
 
@@ -52,7 +53,8 @@ export type Guide = {
   image?: string;
   featuredBlurb: string;
   publicationDate?: string;
-  availableLanguages?: string;
+  language: PublicationLanguage;
+  translations: TranslationEdition[];
   license?: string;
 };
 
@@ -62,10 +64,15 @@ export type GuideHeaderMetaItem = {
   emphasis?: boolean;
 };
 
-export type Language = {
+export type PublicationLanguage = {
   name: string;
   code: string;
   dir: "ltr" | "rtl";
+};
+
+export type TranslationEdition = {
+  language: PublicationLanguage;
+  slug: string;
 };
 
 export type PublicationPage = {
@@ -107,12 +114,11 @@ const publicationSectionSources = import.meta.glob("/publications/*/*.mdx", {
   import: "default",
 }) as Record<string, unknown>;
 
-export const LANGUAGES: Language[] = [
-  { name: "English", code: "en", dir: "ltr" },
-  { name: "العربية", code: "ar", dir: "rtl" },
-  { name: "Français", code: "fr", dir: "ltr" },
-  { name: "Español", code: "es", dir: "ltr" },
-];
+export const INTERFACE_LANGUAGE = {
+  name: "English",
+  code: "en",
+  dir: "ltr",
+} as const satisfies PublicationLanguage;
 
 function stripMdx(rawContent: string) {
   return rawContent
@@ -194,7 +200,8 @@ function getGuide(slug: string, indexFile: PublicationIndexFile): Guide {
     image: indexFile.image,
     featuredBlurb: indexFile.featuredBlurb || indexFile.description,
     publicationDate: indexFile.publicationDate,
-    availableLanguages: indexFile.availableLanguages,
+    language: indexFile.language,
+    translations: indexFile.translations || [],
     license: indexFile.license,
   };
 }

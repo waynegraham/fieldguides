@@ -1,9 +1,4 @@
-import {
-  mkdirSync,
-  readFileSync,
-  readdirSync,
-  writeFileSync,
-} from "node:fs";
+import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -58,7 +53,11 @@ function getSectionDescription(source, fallback) {
   return text.length > 200 ? `${text.slice(0, 197).trimEnd()}…` : text;
 }
 
-export function createPageMetadata({ site, publication, section }) {
+export function createPageMetadata({
+  site,
+  publication = null,
+  section = null,
+}) {
   const siteUrl = normalizeSiteUrl(site.url);
 
   if (!publication) {
@@ -110,6 +109,7 @@ export function createPageMetadata({ site, publication, section }) {
     },
     datePublished: publication.publicationDate,
     license: publication.license,
+    inLanguage: publication.language?.code,
   };
 
   return {
@@ -118,6 +118,12 @@ export function createPageMetadata({ site, publication, section }) {
     canonicalUrl,
     type: "article",
     image,
+    alternates: section
+      ? []
+      : (publication.translations || []).map((translation) => ({
+          language: translation.language.code,
+          url: new URL(`publications/${translation.slug}/`, siteUrl).href,
+        })),
     structuredData: {
       "@context": "https://schema.org",
       ...(section
@@ -138,12 +144,19 @@ export function renderMetadata(metadata, siteName) {
     ? `\n<meta property="og:image" content="${escapeHtml(metadata.image)}" />\n<meta name="twitter:image" content="${escapeHtml(metadata.image)}" />`
     : "";
   const twitterCard = metadata.image ? "summary_large_image" : "summary";
+  const alternateTags = (metadata.alternates || [])
+    .map(
+      (alternate) =>
+        `<link rel="alternate" hreflang="${escapeHtml(alternate.language)}" href="${escapeHtml(alternate.url)}" />`,
+    )
+    .join("\n");
 
   return `${metadataStart}
 <title>${escapeHtml(metadata.title)}</title>
 <meta name="description" content="${escapeHtml(metadata.description)}" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
 <link rel="canonical" href="${escapeHtml(metadata.canonicalUrl)}" />
+${alternateTags}
 <meta property="og:site_name" content="${escapeHtml(siteName)}" />
 <meta property="og:type" content="${metadata.type}" />
 <meta property="og:title" content="${escapeHtml(metadata.title)}" />

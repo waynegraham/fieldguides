@@ -23,6 +23,8 @@ const publication = {
   publisher: "CLIR",
   publicationDate: "August 2026",
   license: "CC BY-NC-SA 4.0",
+  language: { name: "English", code: "en", dir: "ltr" },
+  translations: [],
 };
 
 describe("discovery metadata", () => {
@@ -42,6 +44,9 @@ describe("discovery metadata", () => {
       "https://example.org/fieldguides/publications/test-guide/sections/introduction/",
     );
     expect(metadata.structuredData["@type"]).toBe("Chapter");
+    expect(metadata.structuredData).toMatchObject({
+      isPartOf: { inLanguage: "en" },
+    });
   });
 
   it("escapes metadata rendered into HTML", () => {
