@@ -153,3 +153,4 @@ GitHub Actions runs [`pnpm run check`](./package.json) on pushes to `main` and o
 - Keep UI decoration and design-specific mapping out of the content loader.
 - If you add a new route pattern, update both the route components and the tests in [`src/data/routes.test.ts`](./src/data/routes.test.ts).
 - See [`docs/google-docs-authoring-workflow.md`](./docs/google-docs-authoring-workflow.md) for the proposed Google Docs editorial and import workflow.
+- See [`docs/editorial-submission-and-zenodo-workflow.md`](./docs/editorial-submission-and-zenodo-workflow.md) for the recommended author submission, release, revision, and Zenodo preservation workflow.
