@@ -131,6 +131,106 @@ function extractImages(markdown, warnings) {
   return { markdown: withoutDefinitions, images };
 }
 
+function extractFootnoteDefinitions(markdown, warnings) {
+  const lines = markdown.split("\n");
+  const definitions = new Map();
+  const bodyLines = [];
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const match = lines[index].match(/^\[\^([^\]]+)\]:[ \t]*(.*)$/);
+    if (!match) {
+      bodyLines.push(lines[index]);
+      continue;
+    }
+
+    const [, rawId, firstLine] = match;
+    const id = rawId.trim();
+    const definitionLines = [firstLine];
+
+    while (index + 1 < lines.length) {
+      const nextLine = lines[index + 1];
+      if (/^(?: {2,}|\t)\S/.test(nextLine)) {
+        definitionLines.push(nextLine.replace(/^(?: {2,}|\t)/, ""));
+        index += 1;
+        continue;
+      }
+      if (
+        nextLine.trim() === "" &&
+        index + 2 < lines.length &&
+        /^(?: {2,}|\t)\S/.test(lines[index + 2])
+      ) {
+        definitionLines.push("");
+        index += 1;
+        continue;
+      }
+      break;
+    }
+
+    if (!id) {
+      warnings.push("Found a footnote definition with no identifier.");
+      continue;
+    }
+    if (definitions.has(id)) {
+      warnings.push(`Ignored duplicate footnote definition “${id}”.`);
+      continue;
+    }
+    definitions.set(id, definitionLines.join("\n").trim());
+  }
+
+  return { markdown: bodyLines.join("\n"), definitions };
+}
+
+function attachFootnotes(sections, definitions, warnings) {
+  const usedDefinitions = new Set();
+
+  const sectionsWithFootnotes = sections.map((section) => {
+    const referencedIds = [];
+    const seenIds = new Set();
+
+    for (const match of section.body.matchAll(/\[\^([^\]]+)\]/g)) {
+      const id = match[1].trim();
+      if (!seenIds.has(id)) {
+        seenIds.add(id);
+        referencedIds.push(id);
+      }
+    }
+
+    const sectionDefinitions = [];
+    for (const id of referencedIds) {
+      const definition = definitions.get(id);
+      if (definition === undefined) {
+        warnings.push(
+          `Section “${section.title}” references missing footnote “${id}”.`,
+        );
+        continue;
+      }
+      usedDefinitions.add(id);
+      const continuation = definition
+        .split("\n")
+        .map((line, index) => (index === 0 ? line : `    ${line}`))
+        .join("\n");
+      sectionDefinitions.push(`[^${id}]: ${continuation}`);
+    }
+
+    if (sectionDefinitions.length === 0) {
+      return section;
+    }
+
+    return {
+      ...section,
+      body: `${section.body.trim()}\n\n${sectionDefinitions.join("\n\n")}`,
+    };
+  });
+
+  for (const id of definitions.keys()) {
+    if (!usedDefinitions.has(id)) {
+      warnings.push(`Footnote “${id}” is defined but never referenced.`);
+    }
+  }
+
+  return sectionsWithFootnotes;
+}
+
 function splitSections(markdown, warnings, preferredTitle) {
   const lines = markdown.split("\n");
   const headingIndexes = [];
@@ -208,11 +308,18 @@ export function convertGoogleMarkdown(source, options = {}) {
   const normalized = source.replace(/\r\n?/g, "\n").trim();
   const withoutNavigation = removeNavigation(normalized);
   const { markdown, images } = extractImages(withoutNavigation, warnings);
-  const { documentTitle, sections } = splitSections(
-    markdown,
+  const footnotes = extractFootnoteDefinitions(markdown, warnings);
+  const splitResult = splitSections(
+    footnotes.markdown,
     warnings,
     options.title,
   );
+  const sections = attachFootnotes(
+    splitResult.sections,
+    footnotes.definitions,
+    warnings,
+  );
+  const { documentTitle } = splitResult;
   const tableRows = countMarkdownTables(markdown);
 
   if (tableRows > 0) {

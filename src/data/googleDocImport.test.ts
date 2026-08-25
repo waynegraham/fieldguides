@@ -81,4 +81,55 @@ Do the work.
     ]);
     expect(result.sections[0].body).toContain("Guide introduction.");
   });
+
+  it("moves exported footnote definitions into the section that references them", () => {
+    const result = convertGoogleMarkdown(`# Example guide
+
+# Introduction
+
+Field guides support work at the point of need.[^1]
+
+# Planning
+
+Document the workflow.[^planning-note]
+
+[^1]: First citation with a [source](https://example.com/source).
+[^planning-note]: A longer note begins here.
+    It continues on another line.
+`);
+
+    expect(result.sections[0].body).toContain(
+      "Field guides support work at the point of need.[^1]",
+    );
+    expect(result.sections[0].body).toContain(
+      "[^1]: First citation with a [source](https://example.com/source).",
+    );
+    expect(result.sections[0].body).not.toContain("[^planning-note]:");
+    expect(result.sections[1].body).toContain(
+      "[^planning-note]: A longer note begins here.\n    It continues on another line.",
+    );
+    expect(result.warnings).toEqual([]);
+  });
+
+  it("warns about unresolved, unused, and duplicate footnotes", () => {
+    const result = convertGoogleMarkdown(`# Example guide
+
+# Introduction
+
+Text with a missing note.[^missing]
+
+[^unused]: This definition is not referenced.
+[^unused]: A duplicate definition.
+`);
+
+    expect(result.warnings).toContain(
+      "Ignored duplicate footnote definition “unused”.",
+    );
+    expect(result.warnings).toContain(
+      "Section “Introduction” references missing footnote “missing”.",
+    );
+    expect(result.warnings).toContain(
+      "Footnote “unused” is defined but never referenced.",
+    );
+  });
 });

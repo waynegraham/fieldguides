@@ -1,44 +1,105 @@
-This page documents the typography and MDX components currently available in this site. Use it as a reference when writing new guide content so the presentation stays consistent.
+This page documents the formatting conventions and MDX components available on this site. Use these patterns when writing or editing a guide so that content remains consistent, accessible, and readable in the browser and in print.
 
-## Basic Text
+## General conventions
 
-Paragraphs are set in the guide's serif reading style. Use regular markdown for most body copy, and rely on **bold text** or _italics_ sparingly to create emphasis inside a paragraph.
+- Write in plain Markdown whenever it provides the structure you need.
+- Use headings to describe the content that follows, not only to make text larger.
+- Keep link text descriptive and meaningful out of context.
+- Provide alt text for every informative image.
+- Use site components only when their added emphasis or layout helps the reader.
+- Preview the page at narrow and wide viewport sizes before publishing.
 
-When you need to link out to another resource, use a standard markdown link such as [CLIR](https://www.clir.org/). Inline code also works for short references like `metadata.json`, `GuidePullQuote`, or `pnpm build`.
+## Paragraphs and fonts
+
+Write body copy as plain paragraphs, separated by a blank line. The site applies its own fonts, sizes, line spacing, colors, and print styles. Do not specify a font, font size, text color, alignment, or other presentational style in MDX.
+
+Headings and interface text use the site's sans-serif typeface. Body copy uses the site's serif reading typeface, and code uses a system monospace typeface. Readers can adjust body text size and line spacing in their settings.
+
+### Example
+
+This is a paragraph. It wraps to fit the reader's screen and uses the site-defined reading style.
+
+This is a second paragraph. A blank line in the source separates it from the first.
 
 ### Usage
 
 ```mdx
-Paragraphs are set in the guide's serif reading style.
+This is a paragraph. It wraps to fit the reader's screen and uses the site-defined reading style.
 
-Use **bold text** or _italics_ for emphasis.
-
-Add links with [label](https://example.com).
-
-Use inline code for short references like `GuideCard`.
+This is a second paragraph. A blank line in the source separates it from the first.
 ```
 
 ## Headings
 
-Use `##` for primary section breaks inside a page and `###` for subsections. The page title itself should be provided by the surrounding page shell rather than repeated inside the MDX body.
+Use `##` for a page's main sections and `###` for subsections. The reader interface supplies the page title, so do not add an `#` heading to a guide's MDX file. Keep the hierarchy sequential; do not jump from `##` to `####`.
+
+### Example subsection
+
+The text beneath a heading should explain or develop the topic named by that heading.
 
 ### Usage
 
 ```mdx
-## Primary Section
+## Main section
 
-### Supporting Subsection
+### Subsection
+```
+
+## Bold and italic text
+
+Use **bold text** for a term or short phrase that needs strong emphasis. Use _italic text_ for light emphasis, titles of complete works, or a word discussed as a word. Do not combine bold and italic merely for decoration, and do not emphasize entire paragraphs.
+
+### Usage
+
+```mdx
+Use **bold text** for strong emphasis.
+
+Use _italic text_ for light emphasis or the title of a complete work.
+```
+
+## Links
+
+Use descriptive link text that tells the reader where the link leads. For example, read the [CLIR publications catalog](https://www.clir.org/pubs/) rather than “click here.” Include the full secure URL for an external resource.
+
+### Usage
+
+```mdx
+Read the [CLIR publications catalog](https://www.clir.org/pubs/).
+```
+
+## Images and alt text
+
+Every image must have alt text. Describe the information or purpose conveyed by the image, not its appearance alone. Keep the description concise, avoid phrases such as “image of,” and do not repeat a nearby caption word for word.
+
+Store publication-specific images in that publication's `assets` directory and use a relative path. Use an empty alt value only when an image is purely decorative and adds no information.
+
+![Open book on a table beside a cup and folded eyeglasses](/images/luke-caunt-5utYi64hnJ0-unsplash.jpg)
+
+_An optional caption can provide attribution or context that does not belong in the alt text._
+
+### Usage
+
+```mdx
+![A concise description of the information in the image](./assets/example.png)
+
+_Optional caption or credit._
+```
+
+For a decorative image, retain the brackets but leave them empty:
+
+```mdx
+![](./assets/decorative-divider.png)
 ```
 
 ## Lists
 
-Bulleted lists work well for short checklists, grouped considerations, and resource links:
+Use a bulleted list when item order does not matter. Introduce the list with a complete sentence, keep items grammatically parallel, and use consistent punctuation.
 
-- Name the decision or requirement clearly.
-- Keep each point concise.
-- Prefer parallel phrasing when items belong together.
+- Name the decision clearly.
+- Give the reader enough context.
+- Keep related items together.
 
-Numbered lists are useful when sequence matters:
+Use an ordered list only when the order or number of steps matters.
 
 1. Define the scope.
 2. Assess available capacity.
@@ -47,55 +108,139 @@ Numbered lists are useful when sequence matters:
 ### Usage
 
 ```mdx
-- First item
-- Second item
+- First related item
+- Second related item
 
-1. Step one
-2. Step two
+1. Complete the first step.
+2. Complete the second step.
 ```
 
-## Blockquote
+## Tables
 
-Standard markdown blockquotes are available for cited passages, highlighted observations, or editorial framing.
+Use a table for compact, structured comparisons. Give every column a short, descriptive header. Keep cell content concise; use a list or separate subsections when cells would contain long paragraphs. Wide tables scroll horizontally on smaller screens.
 
-> A blockquote is useful when the content should read as a distinct voice or aside.
+| Component | Use it for                | Avoid it for                |
+| --------- | ------------------------- | --------------------------- |
+| Table     | Comparing repeated fields | Long narrative explanations |
+| List      | Grouping related items    | Multi-column comparisons    |
 
 ### Usage
 
 ```mdx
-> A blockquote is useful when the content should read as a distinct voice or aside.
+| Component | Use it for                | Avoid it for             |
+| --------- | ------------------------- | ------------------------ |
+| Table     | Comparing repeated fields | Long explanations        |
+| List      | Grouping related items    | Multi-column comparisons |
+```
+
+## Inline code and code snippets
+
+Use inline code for filenames, commands, component names, and literal values such as `metadata.json`, `pnpm run build`, and `GuideCard`. Use a fenced code block for a complete command, configuration fragment, or example. Add a language after the opening fence when one applies so syntax highlighting can be added consistently.
+
+```json
+{
+  "title": "Example field guide",
+  "language": "en"
+}
+```
+
+### Usage
+
+````mdx
+Use `pnpm run build` to create a production build.
+
+```json
+{
+  "title": "Example field guide"
+}
+```
+````
+
+Keep snippets focused, remove secrets and personal data, and explain any placeholder values the reader must replace.
+
+## Footnotes
+
+Use footnotes for brief citations or supplementary details that would interrupt the main text. Place the footnote reference immediately after the relevant text.[^example] Use a short, meaningful identifier in the source when practical. Do not use footnotes for essential instructions.
+
+[^example]: A footnote can contain a citation, link, or short explanatory note.
+
+### Usage
+
+```mdx
+Field guides support work at the point of need.[^point-of-need]
+
+[^point-of-need]: Add the citation or brief supplementary note here.
+```
+
+## Blockquotes
+
+Use a blockquote for words attributed to another source. Introduce the quotation and provide its source in nearby text or a footnote.
+
+> A blockquote presents quoted material as a distinct voice rather than as decorative emphasis.
+
+### Usage
+
+```mdx
+> A short quotation from a named source.
+```
+
+## Horizontal rules
+
+Use a horizontal rule sparingly to mark a strong thematic break within a section. A new heading is usually more informative.
+
+---
+
+### Usage
+
+```mdx
+---
+```
+
+## Additional GitHub-flavored Markdown
+
+Task lists and strikethrough are supported, but use them only when their meaning is clear. A task list is appropriate for an actual checklist. Strikethrough is appropriate for showing a deliberate revision or completed item, not for routine emphasis.
+
+- [x] Confirm the guide structure.
+- [ ] Add image descriptions.
+- [ ] Review links.
+
+The ~~working title~~ final title appears in the publication record.
+
+### Usage
+
+```mdx
+- [x] Completed item
+- [ ] Incomplete item
+
+The ~~old term~~ preferred term appears here.
 ```
 
 ## GuidePullQuote
 
-Use `GuidePullQuote` for a high-emphasis callout inside a page. This component is best for a single sentence or short paragraph that should interrupt the reading rhythm and draw attention.
+Use `GuidePullQuote` for one memorable sentence or short paragraph that deserves high emphasis. Do not use it for routine notes, warnings, or long quotations.
 
 <GuidePullQuote>
-  Use the pull quote component for a short statement you want readers to notice
-  immediately.
+  Use a pull quote to give one important idea room to breathe.
 </GuidePullQuote>
 
 ### Usage
 
 ```mdx
 <GuidePullQuote>
-  Use the pull quote component for a short statement you want readers to notice
-  immediately.
+  Use a pull quote to give one important idea room to breathe.
 </GuidePullQuote>
 ```
 
 ## GuideCardGrid and GuideCard
 
-Use `GuideCardGrid` to lay out grouped resources, principles, or tools. Each child should be a `GuideCard` with a concise title and one short block of supporting text.
+Use `GuideCardGrid` to present two or more sibling resources, principles, or tools that readers should scan or compare. Give each `GuideCard` a concise title and one short block of supporting text.
 
 <GuideCardGrid>
   <GuideCard title="Checklists">
-    Use cards when you need a compact summary of a reusable tool, worksheet, or
-    activity.
+    Summarize a reusable tool, worksheet, or activity.
   </GuideCard>
   <GuideCard title="Templates">
-    Keep card copy brief so the grid remains easy to scan on both desktop and
-    mobile.
+    Keep card copy brief so the grid remains easy to scan.
   </GuideCard>
 </GuideCardGrid>
 
@@ -104,26 +249,24 @@ Use `GuideCardGrid` to lay out grouped resources, principles, or tools. Each chi
 ```mdx
 <GuideCardGrid>
   <GuideCard title="Checklists">
-    Use cards when you need a compact summary of a reusable tool, worksheet, or
-    activity.
+    Summarize a reusable tool, worksheet, or activity.
   </GuideCard>
   <GuideCard title="Templates">
-    Keep card copy brief so the grid remains easy to scan on both desktop and
-    mobile.
+    Keep card copy brief so the grid remains easy to scan.
   </GuideCard>
 </GuideCardGrid>
 ```
 
 ## GuideHeader
 
-`GuideHeader` is rendered by the reading interface for publication pages. Do not place `GuideHeader` inside normal guide body content unless you are intentionally building a custom page shell.
+`GuideHeader` is rendered by the reading interface for publication pages. Do not place it in normal guide body content unless you are intentionally building a custom page shell.
 
-### Reference Only
+### Reference only
 
 ```mdx
 <GuideHeader
   eyebrow="Section 04"
-  title="Initial Assessment"
+  title="Initial assessment"
   metadata={[
     { label: "March 2026" },
     { label: "By Alexander Pope", emphasis: true },
@@ -131,9 +274,17 @@ Use `GuideCardGrid` to lay out grouped resources, principles, or tools. Each chi
 />
 ```
 
-## Writing Guidance
+## Suggested future components
 
-- Default to plain markdown for narrative content.
-- Use `GuidePullQuote` for one memorable idea, not for routine notes.
-- Use `GuideCardGrid` only when multiple sibling items should be compared or scanned together.
-- Keep examples short enough to stay readable in the reader layout.
+Consider adding dedicated components when the same semantic pattern appears in several guides. Useful candidates include:
+
+- **Figure:** Pair an image, caption, credit, and source in one accessible component.
+- **Note, tip, and warning callouts:** Distinguish supplementary advice from cautions without relying on color alone.
+- **Definition list or glossary:** Present terms and definitions consistently.
+- **Download card:** Show a file's title, format, size, and accessible download action.
+- **Video or audio embed:** Require captions or a transcript and provide a fallback link.
+- **Data visualization:** Include a text summary and an accessible data table.
+- **Bibliography entry:** Standardize citations and persistent identifiers such as a DOI.
+- **Expandable details:** Hide optional supporting material while keeping essential content visible.
+
+Add a component only when it provides meaning, accessibility, or reusable behavior that plain Markdown cannot provide.

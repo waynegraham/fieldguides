@@ -66,14 +66,22 @@ Authors can use these Google Docs features:
 - Heading 2 and Heading 3 for section headings. The tab title supplies Heading
   1, so authors should not add Heading 1 in a section tab.
 - Bold, italic, links, numbered lists, and bulleted lists.
+- Footnotes inserted with the Google Docs footnote control.
 - Inline images with alt text.
 - Tables when the information is genuinely tabular.
 - A paragraph starting with `Pull quote:` for a pull quote. The importer removes
   the prefix and writes a `GuidePullQuote` MDX component.
 
-The first importer version should reject or warn about comments, unresolved
-suggestions, drawings, equations, footnotes, nested tables, and other features
-that do not have an agreed MDX representation.
+Give authors the copy-ready
+[Google Docs formatting conventions](./google-doc-formatting-conventions.md).
+This reference explains how to apply each supported format, provides examples,
+and identifies formatting that the current importer does not preserve.
+
+The importer should reject or warn about comments, unresolved suggestions,
+drawings, equations, nested tables, and other features that do not have an
+agreed MDX representation. Exported footnotes are preserved in the section that
+contains their reference; missing, duplicate, and unused definitions produce
+import warnings.
 
 ## Import behavior
 
