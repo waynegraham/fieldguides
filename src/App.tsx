@@ -12,6 +12,7 @@ import {
 
 import { DocumentMetadata } from "./components/DocumentMetadata";
 import { Navigation } from "./components/Navigation";
+import { ReaderView } from "./components/ReaderView";
 import { GuideHeader } from "./components/mdx/GuideMdxComponents";
 import { guideMdxComponents } from "./components/mdx/mdxComponentMap";
 import {
@@ -44,11 +45,6 @@ const CitationModal = lazy(() =>
 const LandingPage = lazy(() =>
   import("./components/LandingPage").then(({ LandingPage }) => ({
     default: LandingPage,
-  })),
-);
-const ReaderView = lazy(() =>
-  import("./components/ReaderView").then(({ ReaderView }) => ({
-    default: ReaderView,
   })),
 );
 const SearchOverlay = lazy(() =>
@@ -207,6 +203,10 @@ function FieldGuidesLayout() {
 
   const pages = selectedPublication?.pages || [];
   const currentPage = pages.find((page) => page.id === pageId) || pages[0];
+
+  if (isReading && currentPage) {
+    void currentPage.loadContent();
+  }
 
   const filteredGuides = GUIDES.filter(
     (guide) =>
@@ -573,23 +573,21 @@ function PublicationReaderRoute() {
   }
 
   return (
-    <Suspense fallback={null}>
-      <ReaderView
-        isOpen
-        isSidebarOpen={isSidebarOpen}
-        guide={selectedPublication.guide}
-        currentPage={currentPage}
-        currentPageId={currentPage.id}
-        pages={pages}
-        readerClasses={readerClasses}
-        onClose={closeReader}
-        onToggleSidebar={toggleSidebar}
-        onOpenCitation={openCitation}
-        onOpenSettings={openSettings}
-        onPrint={preparePrint}
-        onSelectPage={(nextPageId) => openReaderPage(slug, nextPageId)}
-      />
-    </Suspense>
+    <ReaderView
+      isOpen
+      isSidebarOpen={isSidebarOpen}
+      guide={selectedPublication.guide}
+      currentPage={currentPage}
+      currentPageId={currentPage.id}
+      pages={pages}
+      readerClasses={readerClasses}
+      onClose={closeReader}
+      onToggleSidebar={toggleSidebar}
+      onOpenCitation={openCitation}
+      onOpenSettings={openSettings}
+      onPrint={preparePrint}
+      onSelectPage={(nextPageId) => openReaderPage(slug, nextPageId)}
+    />
   );
 }
 
