@@ -9,6 +9,42 @@ type LandingPageProps = {
   onReadGuide: (slug: string) => void;
 };
 
+function getPublicAssetUrl(path: string) {
+  if (/^(?:[a-z]+:)?\/\//i.test(path) || path.startsWith("data:")) {
+    return path;
+  }
+
+  return `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
+}
+
+function GuideImage({
+  guide,
+  className,
+}: {
+  guide: GuideCard;
+  className: string;
+}) {
+  if (!guide.image) {
+    return null;
+  }
+
+  return (
+    <picture>
+      {guide.imageAvif && (
+        <source srcSet={getPublicAssetUrl(guide.imageAvif)} type="image/avif" />
+      )}
+      {guide.imageWebp && (
+        <source srcSet={getPublicAssetUrl(guide.imageWebp)} type="image/webp" />
+      )}
+      <img
+        src={getPublicAssetUrl(guide.image)}
+        alt={guide.title}
+        className={className}
+      />
+    </picture>
+  );
+}
+
 export function LandingPage({ guides, onReadGuide }: LandingPageProps) {
   const featuredGuide = guides[0];
 
@@ -84,10 +120,8 @@ export function LandingPage({ guides, onReadGuide }: LandingPageProps) {
             </div>
             <div className="lg:w-2/5 relative min-h-[400px]">
               {featuredGuide.image ? (
-                <img
-                  src={featuredGuide.image}
-                  alt={featuredGuide.title}
-                  referrerPolicy="no-referrer"
+                <GuideImage
+                  guide={featuredGuide}
                   className="absolute inset-0 w-full h-full object-cover opacity-80"
                 />
               ) : (
@@ -122,10 +156,8 @@ export function LandingPage({ guides, onReadGuide }: LandingPageProps) {
               >
                 <div className="aspect-[4/3] overflow-hidden">
                   {guide.image ? (
-                    <img
-                      src={guide.image}
-                      alt={guide.title}
-                      referrerPolicy="no-referrer"
+                    <GuideImage
+                      guide={guide}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                   ) : (

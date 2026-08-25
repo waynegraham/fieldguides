@@ -25,6 +25,8 @@ type PublicationIndexFile = {
       }
   >;
   image?: string;
+  imageWebp?: string;
+  imageAvif?: string;
   icon?: "archive" | "book-open" | "cpu" | "database" | "globe" | "leaf";
   color?: string;
   accent?: string;
@@ -51,6 +53,8 @@ export type Guide = {
   copyright: string;
   description: string;
   image?: string;
+  imageWebp?: string;
+  imageAvif?: string;
   featuredBlurb: string;
   publicationDate?: string;
   language: PublicationLanguage;
@@ -199,6 +203,8 @@ function getGuide(slug: string, indexFile: PublicationIndexFile): Guide {
       `© ${indexFile.publicationDate || "2026"} ${indexFile.publisher || "Council on Library and Information Resources"}`,
     description: indexFile.description,
     image: indexFile.image,
+    imageWebp: indexFile.imageWebp,
+    imageAvif: indexFile.imageAvif,
     featuredBlurb: indexFile.featuredBlurb || indexFile.description,
     publicationDate: indexFile.publicationDate,
     language: indexFile.language,
