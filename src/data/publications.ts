@@ -1,4 +1,4 @@
-import type { ComponentType } from "react";
+import { lazy, type ComponentType, type LazyExoticComponent } from "react";
 import YAML from "yaml";
 
 import { getPublicationRoute, getPublicationPageRoute } from "./routes";
@@ -81,7 +81,8 @@ export type PublicationPage = {
   section: string;
   searchableText: string;
   publicationSlug: string;
-  Content: ComponentType<MdxComponentProps>;
+  loadContent: () => Promise<PublicationModule>;
+  Content: LazyExoticComponent<ComponentType<MdxComponentProps>>;
 };
 
 export type Publication = {
@@ -104,9 +105,9 @@ const publicationIndexes = import.meta.glob("/publications/*/index.json", {
   import: "default",
 }) as Record<string, PublicationIndexFile>;
 
-const publicationSectionModules = import.meta.glob("/publications/*/*.mdx", {
-  eager: true,
-}) as Record<string, PublicationModule>;
+const publicationSectionModules = import.meta.glob<PublicationModule>(
+  "/publications/*/*.mdx",
+);
 
 const publicationSectionSources = import.meta.glob("/publications/*/*.mdx", {
   eager: true,
@@ -215,10 +216,10 @@ function getPublicationPages(
       const sectionId =
         typeof sectionEntry === "string" ? sectionEntry : sectionEntry.id;
       const modulePath = `/publications/${slug}/${sectionId}.mdx`;
-      const sectionModule = publicationSectionModules[modulePath];
+      const loadSectionModule = publicationSectionModules[modulePath];
       const rawSource = publicationSectionSources[modulePath];
 
-      if (!sectionModule || !rawSource) {
+      if (!loadSectionModule || !rawSource) {
         return null;
       }
 
@@ -236,7 +237,8 @@ function getPublicationPages(
           String(sectionIndex + 1).padStart(2, "0"),
         searchableText: attributes.searchableText || stripMdx(body),
         publicationSlug: slug,
-        Content: sectionModule.default,
+        loadContent: loadSectionModule,
+        Content: lazy(loadSectionModule),
       } satisfies PublicationPage;
     })
     .filter((page): page is PublicationPage => Boolean(page));

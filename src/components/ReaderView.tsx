@@ -8,7 +8,7 @@ import {
   Settings,
   X,
 } from "lucide-react";
-import { useCallback, useId, useState } from "react";
+import { Suspense, useCallback, useId, useState } from "react";
 import { Link } from "react-router-dom";
 
 import type {
@@ -33,6 +33,7 @@ type ReaderViewProps = {
   onToggleSidebar: () => void;
   onOpenCitation: () => void;
   onOpenSettings: () => void;
+  onPrint: () => void;
   onSelectPage: (pageId: string) => void;
 };
 
@@ -138,6 +139,7 @@ export function ReaderView({
   onToggleSidebar,
   onOpenCitation,
   onOpenSettings,
+  onPrint,
   onSelectPage,
 }: ReaderViewProps) {
   const titleId = useId();
@@ -358,7 +360,7 @@ export function ReaderView({
                         <Settings className="w-4 h-4" /> Reading Preferences
                       </button>
                       <button
-                        onClick={() => window.print()}
+                        onClick={onPrint}
                         type="button"
                         className="flex items-center gap-3 text-sm transition-colors hover:text-clir"
                         style={{ color: "var(--reader-sidebar-tool)" }}
@@ -384,7 +386,15 @@ export function ReaderView({
                 />
 
                 <div className="guide-markdown">
-                  <currentPage.Content components={guideMdxComponents} />
+                  <Suspense
+                    fallback={
+                      <p className="text-sm text-[var(--ink-secondary)]">
+                        Loading section…
+                      </p>
+                    }
+                  >
+                    <currentPage.Content components={guideMdxComponents} />
+                  </Suspense>
                 </div>
 
                 <div className="mt-24 flex flex-col items-center justify-between gap-8 border-t border-stone-200 pt-12 dark:border-stone-800 md:flex-row">

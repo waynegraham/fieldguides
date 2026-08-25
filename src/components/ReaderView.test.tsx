@@ -29,6 +29,7 @@ const pages: PublicationPage[] = [
     section: "01",
     searchableText: "Introduction text",
     publicationSlug: "test-guide",
+    loadContent: async () => ({ default: () => <p>Introduction text</p> }),
     Content: () => <p>Introduction text</p>,
   },
   {
@@ -37,6 +38,7 @@ const pages: PublicationPage[] = [
     section: "02",
     searchableText: "Next section text",
     publicationSlug: "test-guide",
+    loadContent: async () => ({ default: () => <p>Next section text</p> }),
     Content: () => <p>Next section text</p>,
   },
 ];
@@ -69,7 +71,8 @@ describe("ReaderView mobile contents", () => {
           onClose={onClose}
           onToggleSidebar={vi.fn()}
           onOpenCitation={vi.fn()}
-          onOpenSettings={vi.fn()}
+        onOpenSettings={vi.fn()}
+        onPrint={vi.fn()}
           onSelectPage={onSelectPage}
         />,
       );
@@ -134,7 +137,8 @@ describe("ReaderView mobile contents", () => {
             onClose={vi.fn()}
             onToggleSidebar={vi.fn()}
             onOpenCitation={vi.fn()}
-            onOpenSettings={vi.fn()}
+          onOpenSettings={vi.fn()}
+          onPrint={vi.fn()}
             onSelectPage={vi.fn()}
           />
         </MemoryRouter>,

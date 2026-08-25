@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import {
   Navigate,
   Outlet,
@@ -10,14 +10,8 @@ import {
   useParams,
 } from "react-router-dom";
 
-import { CitationModal } from "./components/CitationModal";
 import { DocumentMetadata } from "./components/DocumentMetadata";
-import { LandingPage } from "./components/LandingPage";
 import { Navigation } from "./components/Navigation";
-import { ReaderView } from "./components/ReaderView";
-import { SearchOverlay } from "./components/SearchOverlay";
-import { SettingsModal } from "./components/SettingsModal";
-import { StyleguidePage } from "./components/StyleguidePage";
 import { GuideHeader } from "./components/mdx/GuideMdxComponents";
 import { guideMdxComponents } from "./components/mdx/mdxComponentMap";
 import {
@@ -37,6 +31,119 @@ type ThemeOption = "light" | "dark" | "system";
 type ReaderFontSize = "small" | "medium" | "large";
 type ReaderLineHeight = "tight" | "normal" | "relaxed";
 
+const StyleguidePage = lazy(() =>
+  import("./components/StyleguidePage").then(({ StyleguidePage }) => ({
+    default: StyleguidePage,
+  })),
+);
+const CitationModal = lazy(() =>
+  import("./components/CitationModal").then(({ CitationModal }) => ({
+    default: CitationModal,
+  })),
+);
+const LandingPage = lazy(() =>
+  import("./components/LandingPage").then(({ LandingPage }) => ({
+    default: LandingPage,
+  })),
+);
+const ReaderView = lazy(() =>
+  import("./components/ReaderView").then(({ ReaderView }) => ({
+    default: ReaderView,
+  })),
+);
+const SearchOverlay = lazy(() =>
+  import("./components/SearchOverlay").then(({ SearchOverlay }) => ({
+    default: SearchOverlay,
+  })),
+);
+const SettingsModal = lazy(() =>
+  import("./components/SettingsModal").then(({ SettingsModal }) => ({
+    default: SettingsModal,
+  })),
+);
+
+function CreativeCommonsBadge() {
+  return (
+    <svg
+      className="print-copyright__license-image"
+      viewBox="0 0 260 88"
+      role="img"
+      aria-label="Creative Commons Attribution-NonCommercial-ShareAlike"
+    >
+      <rect
+        x="1.5"
+        y="1.5"
+        width="257"
+        height="85"
+        rx="5"
+        fill="#fff"
+        stroke="#000"
+        strokeWidth="3"
+      />
+      <rect y="57" width="260" height="31" fill="#000" />
+      <g fill="#fff" stroke="#000" strokeWidth="4">
+        <circle cx="40" cy="38" r="28" />
+        <circle cx="101" cy="38" r="28" />
+        <circle cx="162" cy="38" r="28" />
+        <circle cx="223" cy="38" r="28" />
+      </g>
+      <g
+        fill="#000"
+        fontFamily="Arial, sans-serif"
+        fontWeight="700"
+        textAnchor="middle"
+      >
+        <text x="40" y="48" fontSize="27">
+          CC
+        </text>
+        <circle cx="101" cy="27" r="6" />
+        <path d="M93 36h16v21H93zM86 38h30v7H86z" />
+        <text x="162" y="48" fontSize="31">
+          $
+        </text>
+        <path d="M145 19l34 38" fill="none" stroke="#000" strokeWidth="5" />
+        <path
+          d="M232 27a15 15 0 1 0 2 18"
+          fill="none"
+          stroke="#000"
+          strokeWidth="5"
+        />
+        <path d="M232 18v15h-15" fill="none" stroke="#000" strokeWidth="5" />
+      </g>
+      <g
+        fill="#fff"
+        fontFamily="Arial, sans-serif"
+        fontSize="15"
+        fontWeight="700"
+        textAnchor="middle"
+      >
+        <text x="101" y="79">
+          BY
+        </text>
+        <text x="162" y="79">
+          NC
+        </text>
+        <text x="223" y="79">
+          SA
+        </text>
+      </g>
+    </svg>
+  );
+}
+
+function getPrintCopyright(
+  publicationDate: string | undefined,
+  copyright: string,
+) {
+  const publicationYear = publicationDate?.match(/\b\d{4}\b/)?.[0];
+  const copyrightOwner = copyright
+    .replace(/^©\s*/, "")
+    .replace(/^\d{4}\s+/, "")
+    .trim();
+
+  return `Copyright © ${publicationYear ? `${publicationYear} ` : ""}${copyrightOwner}`;
+}
+
 type AppRouteContext = {
   isReading: boolean;
   selectedPublication: (typeof PUBLICATIONS)[number];
@@ -50,6 +157,7 @@ type AppRouteContext = {
   toggleSidebar: () => void;
   openCitation: () => void;
   openSettings: () => void;
+  preparePrint: () => void;
 };
 
 function getReaderClasses(
@@ -95,6 +203,7 @@ function FieldGuidesLayout() {
   const [readerLineHeight, setReaderLineHeight] =
     useState<ReaderLineHeight>("normal");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isPrintReady, setIsPrintReady] = useState(false);
 
   const pages = selectedPublication?.pages || [];
   const currentPage = pages.find((page) => page.id === pageId) || pages[0];
@@ -214,6 +323,24 @@ function FieldGuidesLayout() {
     };
   }, [isReading]);
 
+  useEffect(() => {
+    if (!isPrintReady) {
+      return;
+    }
+
+    const printFrame = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => window.print());
+    });
+    const resetPrintLayout = () => setIsPrintReady(false);
+
+    window.addEventListener("afterprint", resetPrintLayout, { once: true });
+
+    return () => {
+      window.cancelAnimationFrame(printFrame);
+      window.removeEventListener("afterprint", resetPrintLayout);
+    };
+  }, [isPrintReady]);
+
   if (!selectedPublication || !currentPage) {
     return <Navigate to="/" replace />;
   }
@@ -231,6 +358,11 @@ function FieldGuidesLayout() {
     toggleSidebar: () => setIsSidebarOpen((open) => !open),
     openCitation: () => setIsCiteOpen(true),
     openSettings: () => setIsSettingsOpen(true),
+    preparePrint: () => {
+      void Promise.all(pages.map((page) => page.loadContent())).then(() =>
+        setIsPrintReady(true),
+      );
+    },
   };
 
   return (
@@ -251,43 +383,55 @@ function FieldGuidesLayout() {
         onCloseMenu={() => setIsMenuOpen(false)}
       />
 
-      <SearchOverlay
-        isOpen={isSearchOpen}
-        searchQuery={searchQuery}
-        filteredGuides={filteredGuides}
-        filteredPages={filteredPages}
-        onClose={closeSearch}
-        onSearchChange={setSearchQuery}
-        onOpenGuide={openPublication}
-        onOpenPage={openReaderPage}
-      />
+      {isSearchOpen && (
+        <Suspense fallback={null}>
+          <SearchOverlay
+            isOpen
+            searchQuery={searchQuery}
+            filteredGuides={filteredGuides}
+            filteredPages={filteredPages}
+            onClose={closeSearch}
+            onSearchChange={setSearchQuery}
+            onOpenGuide={openPublication}
+            onOpenPage={openReaderPage}
+          />
+        </Suspense>
+      )}
 
       <main id="main-content" tabIndex={-1}>
         <Outlet context={context} />
       </main>
 
-      <CitationModal
-        isOpen={isCiteOpen}
-        citeFormat={citeFormat}
-        copied={copied}
-        citation={generateCitation(citeFormat)}
-        onClose={() => setIsCiteOpen(false)}
-        onSelectFormat={setCiteFormat}
-        onCopy={handleCopyCitation}
-      />
+      {isCiteOpen && (
+        <Suspense fallback={null}>
+          <CitationModal
+            isOpen
+            citeFormat={citeFormat}
+            copied={copied}
+            citation={generateCitation(citeFormat)}
+            onClose={() => setIsCiteOpen(false)}
+            onSelectFormat={setCiteFormat}
+            onCopy={handleCopyCitation}
+          />
+        </Suspense>
+      )}
 
-      <SettingsModal
-        isOpen={isSettingsOpen}
-        theme={theme}
-        readerFontSize={readerFontSize}
-        readerLineHeight={readerLineHeight}
-        onClose={() => setIsSettingsOpen(false)}
-        onThemeChange={setTheme}
-        onFontSizeChange={setReaderFontSize}
-        onLineHeightChange={setReaderLineHeight}
-      />
+      {isSettingsOpen && (
+        <Suspense fallback={null}>
+          <SettingsModal
+            isOpen
+            theme={theme}
+            readerFontSize={readerFontSize}
+            readerLineHeight={readerLineHeight}
+            onClose={() => setIsSettingsOpen(false)}
+            onThemeChange={setTheme}
+            onFontSizeChange={setReaderFontSize}
+            onLineHeightChange={setReaderLineHeight}
+          />
+        </Suspense>
+      )}
 
-      {isReading && (
+      {isReading && isPrintReady && (
         <div id="print-container" className="hidden">
           <section className="print-cover" aria-label="Publication cover">
             <div className="print-cover__mark" aria-hidden="true">
@@ -311,6 +455,37 @@ function FieldGuidesLayout() {
             </footer>
           </section>
 
+          <section
+            className="print-copyright"
+            aria-label="Copyright and publication information"
+          >
+            <div className="print-copyright__content">
+              <p className="print-copyright__notice">
+                {getPrintCopyright(
+                  selectedPublication.guide.publicationDate,
+                  selectedPublication.guide.copyright,
+                )}
+              </p>
+
+              {selectedPublication.guide.license ? (
+                <div className="print-copyright__license">
+                  <CreativeCommonsBadge />
+                  <p>
+                    This work is licensed under a Creative Commons
+                    <br />
+                    Attribution-NonCommercial-ShareAlike 4.0 International
+                    License.
+                  </p>
+                </div>
+              ) : null}
+
+              <div className="print-copyright__publisher">
+                <p className="print-copyright__label">Published by</p>
+                <p>{selectedPublication.guide.publisher}</p>
+              </div>
+            </div>
+          </section>
+
           {pages.map((page) => (
             <div
               key={page.id}
@@ -332,7 +507,9 @@ function FieldGuidesLayout() {
                 ]}
               />
               <div className="guide-markdown">
-                <page.Content components={guideMdxComponents} />
+                <Suspense fallback={null}>
+                  <page.Content components={guideMdxComponents} />
+                </Suspense>
               </div>
             </div>
           ))}
@@ -350,10 +527,12 @@ function LandingRoute() {
   const { openPublication } = useAppRouteContext();
 
   return (
-    <LandingPage
-      guides={GUIDES.map((guide, index) => decorateGuide(guide, index))}
-      onReadGuide={openPublication}
-    />
+    <Suspense fallback={null}>
+      <LandingPage
+        guides={GUIDES.map((guide, index) => decorateGuide(guide, index))}
+        onReadGuide={openPublication}
+      />
+    </Suspense>
   );
 }
 
@@ -368,6 +547,7 @@ function PublicationReaderRoute() {
     closeReader,
     openCitation,
     openSettings,
+    preparePrint,
     openReaderPage,
     toggleSidebar,
   } = useAppRouteContext();
@@ -393,20 +573,23 @@ function PublicationReaderRoute() {
   }
 
   return (
-    <ReaderView
-      isOpen
-      isSidebarOpen={isSidebarOpen}
-      guide={selectedPublication.guide}
-      currentPage={currentPage}
-      currentPageId={currentPage.id}
-      pages={pages}
-      readerClasses={readerClasses}
-      onClose={closeReader}
-      onToggleSidebar={toggleSidebar}
-      onOpenCitation={openCitation}
-      onOpenSettings={openSettings}
-      onSelectPage={(nextPageId) => openReaderPage(slug, nextPageId)}
-    />
+    <Suspense fallback={null}>
+      <ReaderView
+        isOpen
+        isSidebarOpen={isSidebarOpen}
+        guide={selectedPublication.guide}
+        currentPage={currentPage}
+        currentPageId={currentPage.id}
+        pages={pages}
+        readerClasses={readerClasses}
+        onClose={closeReader}
+        onToggleSidebar={toggleSidebar}
+        onOpenCitation={openCitation}
+        onOpenSettings={openSettings}
+        onPrint={preparePrint}
+        onSelectPage={(nextPageId) => openReaderPage(slug, nextPageId)}
+      />
+    </Suspense>
   );
 }
 
@@ -415,7 +598,14 @@ export default function App() {
     <>
       <DocumentMetadata />
       <Routes>
-        <Route path="/styleguide" element={<StyleguidePage />} />
+        <Route
+          path="/styleguide"
+          element={
+            <Suspense fallback={null}>
+              <StyleguidePage />
+            </Suspense>
+          }
+        />
         <Route element={<FieldGuidesLayout />}>
           <Route index element={<LandingRoute />} />
           <Route

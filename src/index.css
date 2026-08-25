@@ -1,4 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap");
 @import "tailwindcss";
 
 @font-face {
@@ -472,6 +471,62 @@ body {
     margin: 0 !important;
     font-size: inherit !important;
     line-height: 1.3 !important;
+  }
+
+  .print-copyright {
+    box-sizing: border-box;
+    display: flex !important;
+    width: 100%;
+    min-height: calc(297mm - 4cm);
+    break-after: page;
+    page-break-after: always;
+    align-items: center;
+    justify-content: center;
+    color: #000000 !important;
+    background: #ffffff !important;
+    font-family: "Cormorant Garamond", serif !important;
+    text-align: center;
+  }
+
+  .print-copyright__content {
+    width: 145mm;
+    transform: translateY(9mm);
+  }
+
+  .print-copyright p {
+    margin: 0 !important;
+    font-family: "Cormorant Garamond", serif !important;
+    font-size: 14pt !important;
+    font-weight: 500;
+    line-height: 1.22 !important;
+  }
+
+  .print-copyright__notice {
+    font-weight: 600 !important;
+  }
+
+  .print-copyright__license {
+    margin-top: 25mm;
+  }
+
+  .print-copyright__license-image {
+    display: block;
+    width: 40mm;
+    height: auto;
+    margin: 0 auto 20mm;
+  }
+
+  .print-copyright__license p {
+    font-weight: 600;
+  }
+
+  .print-copyright__publisher {
+    margin-top: 18mm;
+  }
+
+  .print-copyright__publisher .print-copyright__label {
+    margin-bottom: 8mm !important;
+    font-weight: 700;
   }
 
   .print-page {
