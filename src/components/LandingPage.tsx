@@ -195,9 +195,8 @@ export function LandingPage({ guides, onReadGuide }: LandingPageProps) {
           <div className="relative">
             <div className="aspect-square rounded-[40px] overflow-hidden">
               <img
-                src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&q=80&w=1000"
+                src={getPublicAssetUrl("images/library-bookshelves.jpg")}
                 alt="Library architecture"
-                referrerPolicy="no-referrer"
                 className="w-full h-full object-cover"
               />
             </div>
