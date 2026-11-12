@@ -71,8 +71,8 @@ describe("ReaderView mobile contents", () => {
           onClose={onClose}
           onToggleSidebar={vi.fn()}
           onOpenCitation={vi.fn()}
-        onOpenSettings={vi.fn()}
-        onPrint={vi.fn()}
+          onOpenSettings={vi.fn()}
+          onPrint={vi.fn()}
           onSelectPage={onSelectPage}
         />,
       );
@@ -137,8 +137,8 @@ describe("ReaderView mobile contents", () => {
             onClose={vi.fn()}
             onToggleSidebar={vi.fn()}
             onOpenCitation={vi.fn()}
-          onOpenSettings={vi.fn()}
-          onPrint={vi.fn()}
+            onOpenSettings={vi.fn()}
+            onPrint={vi.fn()}
             onSelectPage={vi.fn()}
           />
         </MemoryRouter>,
